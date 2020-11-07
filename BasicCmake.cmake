@@ -17,6 +17,9 @@ execute_process(
 
 )
 message("conan install end ${_RES}")
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+message("conan get libs\t${CONAN_LIBS}\n")
 
 
 include(${BOOTSTRAP_DIR}/common/CMake/FuncDefs.cmake)
@@ -25,9 +28,7 @@ include(${BOOTSTRAP_DIR}/common/CMake/FuncDefs.cmake)
 include(${BOOTSTRAP_DIR}/common/CMake/CommonInclude.cmake)
 
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
-message("conan get libs\t${CONAN_LIBS}\n")
+
 
 
 # 编译ptoro, 所有proto 打包为一个定义 PTOTO_CPPS
