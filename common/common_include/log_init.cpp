@@ -1,3 +1,4 @@
+#ifdef LOG_BOOST
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/log/attributes.hpp>
 #include <boost/log/common.hpp>
@@ -51,3 +52,6 @@ int log_init() {
   file.close();
   return 0;
 }
+#else
+int log_init() { return 0; }
+#endif

@@ -5,11 +5,6 @@
 
 int beforeRun() {
   srand(time(NULL));
-  int iRet = 0;
-#ifdef LOG_BOOST
-  iRet = log_init();
-#else
-  iRet = 0;
-#endif
+  int iRet = log_init();
   return iRet;
 }

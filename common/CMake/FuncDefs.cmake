@@ -12,7 +12,7 @@ function(GetSubDirs Dir Result)
     message("All dirs ${DIRS}")
 endfunction()
 
-
+include_directories(${SRC_DIR_ROOT})
 function(AddAllSubDir)
     GetSubDirs(${SRC_DIR_ROOT} SubDir)
     foreach (dir ${SubDir})
