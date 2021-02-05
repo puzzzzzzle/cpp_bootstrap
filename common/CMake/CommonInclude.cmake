@@ -1,7 +1,3 @@
-# 环境
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # 开启nasm支持
 if (ENABLE_ASM)
@@ -31,17 +27,30 @@ if (ENABLE_ASM)
     set(CMAKE_ASM${ASM_DIALECT}_CREATE_SHARED_LIBRARY)
     set(CMAKE_ASM${ASM_DIALECT}_CREATE_SHARED_MODULE)
 endif ()
-### 设置编译flags
-message("cmake build type : ${CMAKE_BUILD_TYPE}")
-set(CMAKE_CXX_FLAGS "-fPIC ${CMAKE_CXX_FLAGS}")
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    set(CMAKE_CXX_FLAGS "-Wall -O0  -g -ggdb ${CMAKE_CXX_FLAGS}")
-elseif ("${CMAKE_BUILD_TYPE}}" STREQUAL "Release")
-    set(CAKE_CXX_FLAGS "-O3 -Wall ${CMAKE_CXX_FLAGS}")
-else ()
-    message("unknow type:${CMAKE_BUILD_TYPE}")
+
+# build type
+function(UnixFlag)
+    message("cmake build type : ${CMAKE_BUILD_TYPE}")
+    set(CMAKE_CXX_FLAGS "-fPIC ${CMAKE_CXX_FLAGS}")
+    if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        set(CMAKE_CXX_FLAGS "-Wall -O0  -g -ggdb ${CMAKE_CXX_FLAGS}")
+    elseif ("${CMAKE_BUILD_TYPE}}" STREQUAL "Release")
+        set(CAKE_CXX_FLAGS "-O3 -Wall ${CMAKE_CXX_FLAGS}")
+    else ()
+        message("unknow type:${CMAKE_BUILD_TYPE}")
+    endif ()
+    message("cmake cxx build flags:${CMAKE_CXX_FLAGS}\n")
+endfunction()
+
+if (WIN32)
+    MESSAGE(STATUS "Now is windows")
+elseif (APPLE)
+    MESSAGE(STATUS "Now is Apple systens.")
+    UnixFlag()
+elseif (UNIX)
+    MESSAGE(STATUS "Now is UNIX-like OS's.")
+    UnixFlag()
 endif ()
-message("cmake cxx build flags:${CMAKE_CXX_FLAGS}\n")
 
 #配置版本号的映射文件，方便代码中使用
 configure_file(

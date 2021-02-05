@@ -5,13 +5,14 @@
 #ifndef UNIXSTUDY_COMMON_FUNCS_H
 #define UNIXSTUDY_COMMON_FUNCS_H
 
-#include <gtest/gtest.h>
 
 #include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <vector>
-
+#include <set>
+#include <iostream>
+#include <iterator>
 //>其他文件中的方法
 //#include "log_init.h"
 //<

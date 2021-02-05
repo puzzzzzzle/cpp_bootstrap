@@ -5,7 +5,12 @@
 #ifndef CPP_STL_STUDYS_COMMON_INCLUDES_H
 #define CPP_STL_STUDYS_COMMON_INCLUDES_H
 
+#ifdef USE_CONAN
+
 #include <gtest/gtest.h>
+
+#endif
+
 #include <thread>
 #include "common_funcs.h"
 #include "log_init.h"
