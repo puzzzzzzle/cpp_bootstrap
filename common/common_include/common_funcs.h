@@ -5,14 +5,17 @@
 #ifndef UNIXSTUDY_COMMON_FUNCS_H
 #define UNIXSTUDY_COMMON_FUNCS_H
 
-
+#include <cassert>
 #include <cstdio>
 #include <cstring>
-#include <iostream>
-#include <vector>
-#include <set>
+#include <fstream>
+#include <functional>
+#include <ios>
 #include <iostream>
 #include <iterator>
+#include <set>
+#include <sstream>
+#include <vector>
 //>其他文件中的方法
 //#include "log_init.h"
 //<
@@ -99,5 +102,82 @@ bool checkDuplicated(int len, T value[]) {
   }
   return true;
 }
+template <typename T>
+std::string VecLikeToString(const T& vec) {
+  if (vec.empty()) {
+    return "[]";
+  }
+  std::ostringstream oss{};
+  oss << "[";
+  for (const auto& item : vec) {
+    oss << item << ",";
+  }
+  oss.seekp(-1, std::ios_base::end);
+  oss << "]";
+  return oss.str();
+}
+template <typename SET_TYPE, typename VALUE_TYPE>
+bool IsInStlCon(const SET_TYPE& checkSet, const VALUE_TYPE& key) {
+  auto it = checkSet.find(key);
+  if (checkSet.end() == it) {
+    return false;
+  } else {
+    return true;
+  }
+}
+template <typename T>
+std::string MapLikeToString(const T& vec) {
+  std::ostringstream oss{};
+  oss << "[";
+  for (const auto& item : vec) {
+    oss << "{" << item.first << "," << item.second << "},";
+  }
+  oss.seekp(-1, std::ios_base::end);
+  oss << "]";
+  return oss.str();
+}
+template <class ItemType>
+bool InContainer(const ItemType& item, const std::vector<ItemType>& container) {
+  return std::find(container.cbegin(), container.cend(), item) !=
+         container.cend();
+}
+template <class ItemType, class FindableContainerType>
+bool InContainer(const ItemType& item, const FindableContainerType& container) {
+  return container.find(item) != container.cend();
+}
 
+struct CommonFuncs {
+  static int Split(std::string s, const std::string& delimiter,
+                   std::vector<std::string>& rst) {
+    rst.clear();
+    int count = 0;
+    size_t pos = 0;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+      std::string token = s.substr(0, pos);
+      rst.push_back(token);
+      ++count;
+      s.erase(0, pos + delimiter.length());
+    }
+    rst.push_back(s);
+    ++count;
+    return count;
+  }
+  static std::string LoadFileStr(const std::string& path) {
+    std::ifstream inFile(path.c_str());
+    if (!inFile.is_open()) {
+      return "";
+    }
+    std::istreambuf_iterator<char> begin(inFile);
+    std::istreambuf_iterator<char> end;
+    std::string allStr(begin, end);
+    return allStr;
+  }
+  static bool startsWith(const std::string& s, const std::string& sub) {
+    return s.find(sub) == 0;
+  }
+
+  static bool endsWith(const std::string& s, const std::string& sub) {
+    return s.rfind(sub) == (s.length() - sub.length());
+  }
+};
 #endif  // UNIXSTUDY_COMMON_FUNCS_H
