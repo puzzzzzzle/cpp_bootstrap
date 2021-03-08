@@ -126,11 +126,11 @@ bool IsInStlCon(const SET_TYPE& checkSet, const VALUE_TYPE& key) {
   }
 }
 template <typename T>
-std::string MapLikeToString(const T& vec) {
+std::string MapLikeToString(const T& vec, const std::string& lineGap = "") {
   std::ostringstream oss{};
   oss << "[";
   for (const auto& item : vec) {
-    oss << "{" << item.first << "," << item.second << "},";
+    oss << "{" << item.first << "," << item.second << "}" << lineGap << ",";
   }
   oss.seekp(-1, std::ios_base::end);
   oss << "]";
