@@ -7,11 +7,9 @@ if (NOT IGNORE_CONAN)
     set(CONAN_EXEC "conan install ..  --build missing  ${CONAN_ARGS} ")
     message("CONAN_EXEC at  ${CMAKE_CURRENT_SOURCE_DIR} : ${CONAN_EXEC}")
     execute_process(
-            COMMAND ${CONAN_EXEC}
-
-            ECHO_OUTPUT_VARIABLE
-            ECHO_ERROR_VARIABLE
-
+            COMMAND conan install ..  --build missing
+            OUTPUT_VARIABLE _RES
+            ERROR_VARIABLE _RES
     )
     message("conan install end ${_RES}")
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
