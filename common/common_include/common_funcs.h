@@ -2,9 +2,7 @@
 // Created by tao on 19-1-21.
 //
 
-#ifndef UNIXSTUDY_COMMON_FUNCS_H
-#define UNIXSTUDY_COMMON_FUNCS_H
-
+#pragma once
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -16,6 +14,7 @@
 #include <set>
 #include <sstream>
 #include <vector>
+#include <memory>
 //>其他文件中的方法
 //#include "log_init.h"
 //<
@@ -180,4 +179,13 @@ struct CommonFuncs {
     return s.rfind(sub) == (s.length() - sub.length());
   }
 };
-#endif  // UNIXSTUDY_COMMON_FUNCS_H
+template<typename T>
+T InstenceSharedPtr()
+{
+  return std::make_shared<typename T::element_type>();
+}
+template<typename T>
+T InstenceSharedPtr(T)
+{
+  return std::make_shared<typename T::element_type>();
+}
