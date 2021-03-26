@@ -41,10 +41,10 @@ def build_protoc(proto_dirs, proto_file, out_dir):
 
         execute_str = f"execute_list"
         print(f"will run cmd :  {execute_str}")
-        ret = subprocess.run(execute_list)
-        print(f"run result is {str(ret)}")
-        if ret.returncode != 0:
-            raise Exception(f"execute fail {execute_str}, ret if {str(ret)}")
+        m_searchRet = subprocess.run(execute_list)
+        print(f"run result is {str(m_searchRet)}")
+        if m_searchRet.returncode != 0:
+            raise Exception(f"execute fail {execute_str}, m_searchRet if {str(m_searchRet)}")
 
 
 if __name__ == '__main__':
