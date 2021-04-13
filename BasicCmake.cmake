@@ -1,8 +1,7 @@
-add_definitions(-DBOOTSTRAP_DIR ${BOOTSTRAP_DIR})
 
+add_definitions(-DBOOTSTRAP_DIR=${BOOTSTRAP_DIR})
 include(${BOOTSTRAP_DIR}/common/CMake/FuncDefs.cmake)
 
-# 按需加载conan管理的依赖
 if (NOT IGNORE_CONAN)
     # 加载conan
     set(CONAN_LIBS "")

@@ -100,8 +100,8 @@ class LogTime {
 ///// 原始输出
 #define LOG_RAW_COUT(msg) std::cout << msg;
 #define LOG_RAW_CLINE(msg) std::cout << msg << std::endl;
-#define LOG_RAW_PRINTF(fmt, args...) printf(fmt, ##args);
-#define LOG_RAW_PLINE(fmt, args...) \
+#define LOG_RAW_PRINTF (fmt, args...) printf(fmt, ##args);
+#define LOG_RAW_PLINE (fmt, args...) \
   printf(fmt, ##args);              \
   printf("\n");
 
@@ -114,8 +114,8 @@ class LogTime {
 #define FATAL(msg) LOG_FATAL(msg);
 #define RAW_COUT(msg) LOG_RAW_COUT(msg);
 #define RAW_CLINE(msg) LOG_RAW_CLINE(msg);
-#define RAW_PRINTF(fmt, args...) printf(fmt, ##args);
-#define RAW_PLINE(fmt, args...) \
+#define RAW_PRINTF (fmt, args...) printf(fmt, ##args);
+#define RAW_PLINE (fmt, args...) \
   printf(fmt, ##args);          \
   printf("\n");
 
