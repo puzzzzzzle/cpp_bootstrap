@@ -1,4 +1,3 @@
-
 # 开启nasm支持
 if (ENABLE_ASM)
     set(CMAKE_NASM_LINK_EXECUTABLE "ld <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
@@ -33,9 +32,12 @@ function(UnixFlag)
     message("cmake build type : ${CMAKE_BUILD_TYPE}")
     set(CMAKE_CXX_FLAGS "-fPIC ${CMAKE_CXX_FLAGS}")
     if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-        set(CMAKE_CXX_FLAGS "-Wall -O0  -g -ggdb ${CMAKE_CXX_FLAGS}")
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3 -g3 -fno-omit-frame-pointer")
+        SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -ggdb3 -g3 -fno-omit-frame-pointer")
     elseif ("${CMAKE_BUILD_TYPE}}" STREQUAL "Release")
-        set(CAKE_CXX_FLAGS "-O3 -Wall ${CMAKE_CXX_FLAGS}")
+        # 开O3了
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+        SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
     else ()
         message("unknow type:${CMAKE_BUILD_TYPE}")
     endif ()

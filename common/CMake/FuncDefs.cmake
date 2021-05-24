@@ -1,9 +1,6 @@
 # 获取目录的子目录
 function(GetSubDirs Dir Result)
     message("get dirs in  ${Dir}")
-    #    EXECUTE_PROCESS(
-    #            COMMAND chmod +x ${CMAKE_SOURCE_DIR}/common/CMake/travel_dir.py
-    #    )
     EXECUTE_PROCESS(
             COMMAND python3 ${BOOTSTRAP_DIR}/common/CMake/travel_dir.py ${Dir} d
             OUTPUT_VARIABLE DIRS
@@ -33,10 +30,6 @@ endfunction()
 
 function(BuildProto Dir OutPutDir)
     message("build proto ")
-    #    EXECUTE_PROCESS(
-    #            COMMAND python3 ${BOOTSTRAP_DIR}/common/CMake/travel_dir.py ${Dir} build_proto ${OutPutDir}
-    #            OUTPUT_VARIABLE TEMP_OUT
-    #    )
     message("All proto ${TEMP_OUT}")
 
 endfunction()
@@ -65,8 +58,10 @@ function(extract_file filename extract_dir)
         file(REMOVE_RECURSE ${temp_dir})
     endif()
     file(MAKE_DIRECTORY ${temp_dir})
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${filename}
-            WORKING_DIRECTORY ${temp_dir})
+    execute_process(
+            COMMAND ${CMAKE_COMMAND} -E tar -xf ${filename}
+            WORKING_DIRECTORY ${temp_dir}
+    )
 
     # 这里比较关键，解压之后的临时目录中，可能是单个文件夹，里面包含着我们需要的内容，
     # 也可能是直接就包含着我们需要的内容，因此，这里就统一处理，如果包含单独的文件夹
