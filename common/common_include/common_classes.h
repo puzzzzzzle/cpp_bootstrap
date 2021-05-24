@@ -9,7 +9,7 @@
  * 1.0            puzzzzzzle       create
  ************************************************/
 #pragma once
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <mutex>
 

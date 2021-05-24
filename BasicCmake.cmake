@@ -13,6 +13,7 @@ if (NOT IGNORE_CONAN)
             ERROR_VARIABLE _RES
     )
     message("conan install end ${_RES}")
+    set(CONAN_DISABLE_CHECK_COMPILER "true")
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup()
     message("conan get libs\t${CONAN_LIBS}\n")
