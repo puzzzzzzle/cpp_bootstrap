@@ -67,7 +67,7 @@ include_directories(${BOOTSTRAP_DIR}/common/common_include)
 
 include_directories(${PROJECT_BINARY_DIR}/convent)
 # 通用cpp文件
-aux_source_directory(${BOOTSTRAP_DIR}/common/common_include common_cpps)
+set(common_cpps "")
 
 #boost dynamic
 if (boost_static)

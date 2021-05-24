@@ -1,9 +1,14 @@
-//
-// Created by khalidzhang on 2019/12/6.
-//
-
-#ifndef CPP_STUDY_ALL_TIME_GAP_HPP
-#define CPP_STUDY_ALL_TIME_GAP_HPP
+/************************************************
+ * @author puzzzzzzle
+ * @email 2359173906@qq.com
+ * @desc
+ * @time 2021/5/24
+ * @file time_gap.hpp
+ * @version
+ * version        author            desc
+ * 1.0            puzzzzzzle       create
+ ************************************************/
+#pragma once
 
 #include <sys/time.h>
 
@@ -114,5 +119,3 @@ class TimeTools {
     return timespec{end.tv_sec - start.tv_sec, end.tv_nsec - start.tv_nsec};
   };
 };
-
-#endif  // CPP_STUDY_ALL_TIME_GAP_HPP

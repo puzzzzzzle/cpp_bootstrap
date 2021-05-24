@@ -1,16 +1,16 @@
 /************************************************
- * @author khalidzhang
- * @email khalidzhang@tencent.com
+ * @author puzzzzzzle
+ * @email 2359173906@qq.com
  * @desc 萃取类中是否有某个函数/变量, 支持参数但是类型时严格的, 不会自动转换
  * 先使用宏定义出模板函数
  * 再使用模板函数来判断
  *
  * 也可以实现在判断函数是否存在后, 进行调用
- * @time 2020/11/7
- * @file ClassTraits.h
+ * @time 2021/5/24
+ * @file has_member.h
  * @version
  * version        author            desc
- * 1.0            khalidzhang       create
+ * 1.0            puzzzzzzle       create
  ************************************************/
 #pragma once
 // 检测是否有成员函数的基础模板

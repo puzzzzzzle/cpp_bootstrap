@@ -24,7 +24,7 @@
         int ret = (caller); \
         if (ret) \
         { \
-            ERROR("error\t" << #caller << "\t" << ret) \
+            LOG_ERROR("error\t" << #caller << "\t" << ret) \
             return ret; \
         } \
     }
@@ -33,7 +33,7 @@
         int ret = (caller); \
         if (ret) \
         { \
-            ERROR("error\t" << #caller << "\t" << ret) \
+            LOG_ERROR("error\t" << #caller << "\t" << ret) \
             return; \
         } \
     }
@@ -42,20 +42,20 @@
         int ret = (caller); \
         if (ret) \
         { \
-            ERROR("error\t" << #caller << "\t" << ret) \
+            LOG_ERROR("error\t" << #caller << "\t" << ret) \
             return fail; \
         } \
     }
 #define CALL_IF_TRUE_THROW_DYN(cond, err) \
     if (cond) \
     { \
-        ERROR(#cond)\
+        LOG_ERROR(#cond)\
         throw err; \
     }
 #define CALL_IF_TRUE_THROW(cond) \
     if (cond) \
     { \
-        ERROR(#cond)\
+        LOG_ERROR(#cond)\
         throw  std::invalid_argument(#cond); \
     }
 

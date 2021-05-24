@@ -1,6 +1,13 @@
-//
-// Created by tao on 19-1-21.
-//
+/************************************************
+ * @author puzzzzzzle
+ * @email 2359173906@qq.com
+ * @desc
+ * @time 2021/5/24
+ * @file common_funcs.h
+ * @version
+ * version        author            desc
+ * 1.0            puzzzzzzle       create
+ ************************************************/
 
 #pragma once
 #include <cassert>
@@ -11,13 +18,10 @@
 #include <ios>
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <vector>
-#include <memory>
-//>其他文件中的方法
-//#include "log_init.h"
-//<
 
 /**
  * memncpy 类似strncpy
@@ -27,9 +31,12 @@
  * @param src_len 源最大长度
  * @return 实际拷贝的长度
  */
-size_t memncpy(void* __restrict dest, size_t dest_len,
-               const void* __restrict src, size_t src_len);
-
+inline size_t memncpy(void* __restrict dest, size_t dest_len,
+                      const void* __restrict src, size_t src_len) {
+  size_t len = (src_len < dest_len) ? src_len : dest_len;
+  memcpy(dest, src, len);
+  return len;
+}
 /**
  * memncpy,不返回任何信息
  */
@@ -49,22 +56,59 @@ size_t memncpy(void* __restrict dest, size_t dest_len,
  * @param wait_sec 等待时间
  * @return 正确返回0，出错返回-1
  */
-int test_read_timeout(int fd, long wait_sec);
+inline int test_read_timeout(int fd, long wait_sec) {
+  int ready_number;
+  fd_set r_set{};
+  timeval wait_time{};
+
+  FD_ZERO(&r_set);
+  FD_SET(fd, &r_set);
+
+  wait_time.tv_sec = wait_sec;
+  wait_time.tv_usec = 0;
+
+  do {
+    ready_number = select(fd + 1, &r_set, nullptr, nullptr, &wait_time);
+  } while (ready_number < 0 && errno == EINTR);  //等待被(信号)打断的情况
+
+  return (ready_number == 1) ? 0 : 1;
+}
 
 /**
  * 检测写超时的函数（并不进行读操作）
  * if(write_timeout(fd,waitSec){
  * ERROR() //错误操作
  * }else{
- * write(...) //正确操作
+ * read(...) //正确操作
  * }
  * @param fd 目标fd
  * @param wait_sec 等待时间
  * @return 正确返回0，出错返回-1
  */
-int test_write_timeout(int fd, long wait_sec);
+inline int test_write_timeout(int fd, long wait_sec) {
+  int ready_number;
+  fd_set w_set{};
+  struct timeval wait_time {};
 
-char randChar();
+  FD_ZERO(&w_set);
+  FD_SET(fd, &w_set);
+
+  wait_time.tv_sec = wait_sec;
+  wait_time.tv_usec = 0;
+
+  do {
+    ready_number = select(fd + 1, nullptr, &w_set, nullptr, &wait_time);
+  } while (ready_number < 0 && errno == EINTR);  //等待被(信号)打断的情况
+
+  return (ready_number == 1) ? 0 : -1;
+}
+
+static char readadbleChar[256] =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+inline char randChar() {
+  return readadbleChar[rand() % (strlen(readadbleChar))];
+}
 
 template <class T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
@@ -179,13 +223,11 @@ struct CommonFuncs {
     return s.rfind(sub) == (s.length() - sub.length());
   }
 };
-template<typename T>
-T InstenceSharedPtr()
-{
+template <typename T>
+T InstenceSharedPtr() {
   return std::make_shared<typename T::element_type>();
 }
-template<typename T>
-T InstenceSharedPtr(T)
-{
+template <typename T>
+T InstenceSharedPtr(T) {
   return std::make_shared<typename T::element_type>();
 }

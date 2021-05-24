@@ -1,3 +1,14 @@
+/************************************************
+ * @author puzzzzzzle
+ * @email 2359173906@qq.com
+ * @desc
+ * @time 2021/5/24
+ * @file dyn_aspect.hpp
+ * @version
+ * version        author            desc
+ * 1.0            puzzzzzzle       create
+ ************************************************/
+
 #pragma once
 
 namespace aop {

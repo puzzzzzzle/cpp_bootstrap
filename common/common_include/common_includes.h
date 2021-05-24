@@ -1,10 +1,15 @@
-//
-// Created by tao on 19-2-25.
-//
+/************************************************
+ * @author puzzzzzzle
+ * @email 2359173906@qq.com
+ * @desc
+ * @time 2021/5/24
+ * @file common_includes.h
+ * @version
+ * version        author            desc
+ * 1.0            puzzzzzzle       create
+ ************************************************/
 
-#ifndef CPP_STL_STUDYS_COMMON_INCLUDES_H
-#define CPP_STL_STUDYS_COMMON_INCLUDES_H
-
+#pragma once
 #ifdef USE_CONAN
 
 #include <gtest/gtest.h>
@@ -16,7 +21,8 @@
 #include "log_init.h"
 #include "quick_define.h"
 
-int beforeRun();
-
-
-#endif  // CPP_STL_STUDYS_COMMON_INCLUDES_H
+inline int beforeRun() {
+  srand(time(NULL));
+  int iRet = LogInit::log_init();
+  return iRet;
+}

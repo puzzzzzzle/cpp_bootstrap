@@ -1,23 +1,19 @@
-//
-// Created by tao on 19-3-29.
-//
-
-#ifndef PERSONAL_FILE_PROTECTOR_COMMON_CLASSES_H
-#define PERSONAL_FILE_PROTECTOR_COMMON_CLASSES_H
+/************************************************
+ * @author puzzzzzzle
+ * @email 2359173906@qq.com
+ * @desc
+ * @time 2021/5/24
+ * @file common_classes.h
+ * @version
+ * version        author            desc
+ * 1.0            puzzzzzzle       create
+ ************************************************/
+#pragma once
 #include <stdlib.h>
 
 #include <mutex>
 
 #include "thread"
-
-// class LockGuard {
-//    std::mutex* mlock;
-//
-// public:
-//    LockGuard(std::mutex* _lock) : mlock(_lock) { mlock->lock(); }
-//
-//    ~LockGuard() { mlock->unlock(); }
-//};
 
 template <class Function>
 class ScopeGuard {
@@ -61,5 +57,3 @@ class AutoJoinThreadGuard {
     }
   }
 };
-
-#endif  // PERSONAL_FILE_PROTECTOR_COMMON_CLASSES_H

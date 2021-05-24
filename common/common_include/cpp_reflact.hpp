@@ -1,9 +1,13 @@
-//
-// Created by khalidzhang on 2019/9/22.
-//
-
-#ifndef CPPREFLACT_CPPOBJECT_HPP
-#define CPPREFLACT_CPPOBJECT_HPP
+/************************************************
+ * @author puzzzzzzle
+ * @email 2359173906@qq.com
+ * @desc
+ * @time 2021/5/24
+ * @file cpp_reflact.hpp
+ * @version
+ * version        author            desc
+ * 1.0            puzzzzzzle       create
+ ************************************************/
 
 #include <iostream>
 #include <map>
@@ -82,5 +86,3 @@ class RegisterAction {
       #className, (PTRCreateObject)objectCreator##className)
 #define REFLACT(className) \
   (className *)CppObjectFactory::getInstance()[#className]
-
-#endif  // CPPREFLACT_CPPOBJECT_HPP
