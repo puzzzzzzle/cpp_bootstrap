@@ -22,7 +22,7 @@
 #include <Windows.h>
 #include <stdint.h>  // portable: uint64_t   MSVC: __int64
 
-int gettimeofday(struct timeval *tp, struct timezone *tzp) {
+inline int gettimeofday(struct timeval *tp, struct timezone *tzp) {
   // Note: some broken versions only have 8 trailing zero's, the correct epoch
   // has 9 trailing zero's This magic number is the number of 100 nanosecond
   // intervals since January 1, 1601 (UTC) until 00:00:00 January 1, 1970
@@ -40,6 +40,28 @@ int gettimeofday(struct timeval *tp, struct timezone *tzp) {
   tp->tv_sec = (long)((time - EPOCH) / 10000000L);
   tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
   return 0;
+}
+/* Windows sleep in 100ns units */
+inline int nanosleep(timespec *req, timespec *rem){
+        int64_t ns = req->tv_sec*1000*1000*1000 + req->tv_nsec;
+	/* Declarations */
+	HANDLE timer;	/* Timer handle */
+	LARGE_INTEGER li;	/* Time defintion */
+	/* Create timer */
+	if(!(timer = CreateWaitableTimer(NULL, TRUE, NULL)))
+		return -1;
+	/* Set timer properties */
+	li.QuadPart = -ns;
+	if(!SetWaitableTimer(timer, &li, 0, NULL, NULL, FALSE)){
+		CloseHandle(timer);
+		return -1;
+	}
+	/* Start & wait for timer */
+	WaitForSingleObject(timer, INFINITE);
+	/* Clean resources */
+	CloseHandle(timer);
+	/* Slept without problems */
+	return 0;
 }
 #else
 #include <sys/time.h>
