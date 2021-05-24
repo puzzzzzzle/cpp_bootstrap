@@ -44,8 +44,10 @@ inline size_t memncpy(void* __restrict dest, size_t dest_len,
   memcpy(dest, src, (src_len < dest_len) ? src_len : dest_len)
 
 #ifdef _WIN32
-
+#include "winsock.h"
 #else
+#include <sys/select.h>
+#endif
 /**
  * 检测读超时的函数（并不进行读操作）
  * 也可以用于accept函数
@@ -105,7 +107,6 @@ inline int test_write_timeout(int fd, long wait_sec) {
 
   return (ready_number == 1) ? 0 : -1;
 }
-#endif
 static char readadbleChar[256] =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -162,15 +163,6 @@ std::string VecLikeToString(const T& vec) {
   oss << "]";
   return oss.str();
 }
-template <typename SET_TYPE, typename VALUE_TYPE>
-bool IsInStlCon(const SET_TYPE& checkSet, const VALUE_TYPE& key) {
-  auto it = checkSet.find(key);
-  if (checkSet.end() == it) {
-    return false;
-  } else {
-    return true;
-  }
-}
 template <typename T>
 std::string MapLikeToString(const T& vec, const std::string& lineGap = "") {
   std::ostringstream oss{};
@@ -192,40 +184,38 @@ bool InContainer(const ItemType& item, const FindableContainerType& container) {
   return container.find(item) != container.cend();
 }
 
-struct CommonFuncs {
-  static int Split(std::string s, const std::string& delimiter,
-                   std::vector<std::string>& rst) {
-    rst.clear();
-    int count = 0;
-    size_t pos = 0;
-    while ((pos = s.find(delimiter)) != std::string::npos) {
-      std::string token = s.substr(0, pos);
-      rst.push_back(token);
-      ++count;
-      s.erase(0, pos + delimiter.length());
-    }
-    rst.push_back(s);
+inline int Split(std::string s, const std::string& delimiter,
+                 std::vector<std::string>& rst) {
+  rst.clear();
+  int count = 0;
+  size_t pos = 0;
+  while ((pos = s.find(delimiter)) != std::string::npos) {
+    std::string token = s.substr(0, pos);
+    rst.push_back(token);
     ++count;
-    return count;
+    s.erase(0, pos + delimiter.length());
   }
-  static std::string LoadFileStr(const std::string& path) {
-    std::ifstream inFile(path.c_str());
-    if (!inFile.is_open()) {
-      return "";
-    }
-    std::istreambuf_iterator<char> begin(inFile);
-    std::istreambuf_iterator<char> end;
-    std::string allStr(begin, end);
-    return allStr;
+  rst.push_back(s);
+  ++count;
+  return count;
+}
+inline std::string LoadFileStr(const std::string& path) {
+  std::ifstream inFile(path.c_str());
+  if (!inFile.is_open()) {
+    return "";
   }
-  static bool startsWith(const std::string& s, const std::string& sub) {
-    return s.find(sub) == 0;
-  }
+  std::istreambuf_iterator<char> begin(inFile);
+  std::istreambuf_iterator<char> end;
+  std::string allStr(begin, end);
+  return allStr;
+}
+inline bool startsWith(const std::string& s, const std::string& sub) {
+  return s.find(sub) == 0;
+}
 
-  static bool endsWith(const std::string& s, const std::string& sub) {
-    return s.rfind(sub) == (s.length() - sub.length());
-  }
-};
+inline bool endsWith(const std::string& s, const std::string& sub) {
+  return s.rfind(sub) == (s.length() - sub.length());
+}
 template <typename T>
 T InstenceSharedPtr() {
   return std::make_shared<typename T::element_type>();
