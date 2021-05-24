@@ -43,6 +43,9 @@ inline size_t memncpy(void* __restrict dest, size_t dest_len,
 #define MEMNCPY(dest, dest_len, src, src_len) \
   memcpy(dest, src, (src_len < dest_len) ? src_len : dest_len)
 
+#ifdef _WIN32
+
+#else
 /**
  * 检测读超时的函数（并不进行读操作）
  * 也可以用于accept函数
@@ -102,7 +105,7 @@ inline int test_write_timeout(int fd, long wait_sec) {
 
   return (ready_number == 1) ? 0 : -1;
 }
-
+#endif
 static char readadbleChar[256] =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 

@@ -18,15 +18,9 @@
 #define SEC_NANO (SEC_MICRO * 1000)
 #define MICRO_MILLI (1000 * 1000)
 
-#if defined(_WIN32)
+#ifdef _WIN32
 #include <Windows.h>
 #include <stdint.h>  // portable: uint64_t   MSVC: __int64
-
-// MSVC defines this in winsock2.h!?
-typedef struct timeval {
-  long tv_sec;
-  long tv_usec;
-} timeval;
 
 int gettimeofday(struct timeval *tp, struct timezone *tzp) {
   // Note: some broken versions only have 8 trailing zero's, the correct epoch

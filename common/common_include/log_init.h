@@ -10,7 +10,9 @@
  ************************************************/
 #include <errno.h>
 #include <stdio.h>
-
+#ifdef WIN32
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
 #ifdef LOG_BOOST
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/log/attributes.hpp>
