@@ -44,7 +44,12 @@ inline size_t memncpy(void* __restrict dest, size_t dest_len,
   memcpy(dest, src, (src_len < dest_len) ? src_len : dest_len)
 
 #ifdef _WIN32
+#include "Windows.h"
 #include "winsock.h"
+unsigned sleep(unsigned seconds) {
+  Sleep(seconds);
+  return 0;
+}
 #else
 #include <sys/select.h>
 #endif
