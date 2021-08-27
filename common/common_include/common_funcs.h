@@ -229,3 +229,24 @@ template <typename T>
 T InstenceSharedPtr(T) {
   return std::make_shared<typename T::element_type>();
 }
+
+#define DOUBLE_DIFF_GAP 0.000001
+/**
+ * lhs小 -1
+ * 相等 0
+ * lhs大 1
+ * @param lhs
+ * @param rhs
+ * @return
+ */
+template <typename L, typename R>
+int CompareDouble(L lhs, R rhs) {
+  double diff = lhs - rhs;
+  if (std::abs(diff) <= DOUBLE_DIFF_GAP) {
+    return 0;
+  }
+  if (diff < 0) {
+    return -1;
+  }
+  return 1;
+}
