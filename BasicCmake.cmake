@@ -1,4 +1,8 @@
 
+# 公用定义,需要在设定完成后include
+include(${BOOTSTRAP_DIR}/common/CMake/CommonInclude.cmake)
+
+
 add_definitions(-DBOOTSTRAP_DIR=${BOOTSTRAP_DIR})
 include(${BOOTSTRAP_DIR}/common/CMake/FuncDefs.cmake)
 
@@ -22,8 +26,7 @@ else ()
     add_definitions(-DIGNORE_CONAN)
 endif ()
 
-# 公用定义,需要在设定完成后include
-include(${BOOTSTRAP_DIR}/common/CMake/CommonInclude.cmake)
+
 
 
 # 编译ptoro, 所有proto 打包为一个定义 PTOTO_CPPS
