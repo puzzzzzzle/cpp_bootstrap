@@ -250,3 +250,30 @@ int CompareDouble(L lhs, R rhs) {
   }
   return 1;
 }
+
+inline bool CStartsWith(const char* pre, const char* str) {
+  if (pre == nullptr || str == nullptr) {
+    return false;
+  }
+  return strncmp(pre, str, strlen(pre)) == 0;
+}
+inline char* FindPara(int argc, char** argv, const char* pre) {
+  for (int i = 0; i < argc; ++i) {
+    if (CStartsWith(pre, argv[i])) {
+      return argv[i];
+    }
+  }
+  return nullptr;
+}
+inline const char* FindParaEx(int argc, char** argv, const char* pre,
+                              const char* notFound = nullptr) {
+  static const char* empty = "";
+  auto* cStr = FindPara(argc, argv, pre);
+  if (cStr == nullptr) {
+    return notFound;
+  }
+  if (strlen(cStr) <= strlen(pre)) {
+    return empty;
+  }
+  return &cStr[strlen(pre)];
+}
