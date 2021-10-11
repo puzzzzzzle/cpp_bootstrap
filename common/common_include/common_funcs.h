@@ -265,6 +265,12 @@ inline char* FindPara(int argc, char** argv, const char* pre) {
   }
   return nullptr;
 }
+/**
+ * 查找参数
+ * 查找以 pre 开头的参数
+ * 找到后返回除了 pre部分 到对一个空格的部分字符串
+ * 未找到返回 notFound, 默认为nullptr
+ */
 inline const char* FindParaEx(int argc, char** argv, const char* pre,
                               const char* notFound = nullptr) {
   static const char* empty = "";
