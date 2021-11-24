@@ -45,7 +45,7 @@ namespace attrs = boost::log::attributes;
 namespace sinks = boost::log::sinks;
 namespace trivial = logging::trivial;
 using LogChannal =
-src::severity_channel_logger<trivial::severity_level, std::string>;
+    src::severity_channel_logger<trivial::severity_level, std::string>;
 
 namespace LogInit {
 LogChannal& GetLogger() {
@@ -75,34 +75,34 @@ inline int log_init() {
   return 0;
 }
 }  // namespace LogInit
-#define LOG_TRACE(msg)                                           \
-  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::trace)              \
-      << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
+#define LOG_TRACE(msg)                                                \
+  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::trace) \
+      << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    "      \
       << __PRETTY_FUNCTION__;
-#define LOG_DEBUG(msg)                                           \
-  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::debug)              \
-      << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
+#define LOG_DEBUG(msg)                                                \
+  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::debug) \
+      << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    "      \
       << __PRETTY_FUNCTION__;
-#define LOG_INFO(msg)                                            \
-  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::info)               \
-      << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
+#define LOG_INFO(msg)                                                \
+  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::info) \
+      << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    "     \
       << __PRETTY_FUNCTION__;
-#define LOG_WARNING(msg)                                         \
-  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::warning)            \
-      << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
+#define LOG_WARNING(msg)                                                \
+  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::warning) \
+      << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    "        \
       << __PRETTY_FUNCTION__;
-#define LOG_ERROR(msg)                                           \
-  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::error)              \
-      << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
+#define LOG_ERROR(msg)                                                \
+  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::error) \
+      << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    "      \
       << __PRETTY_FUNCTION__;
 //只是一个参考，调用errno检查错误
 #define LOG_PERROR(msg)                                                      \
-  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::error)                          \
+  BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::error)        \
       << msg << "]   ["                                                      \
       << " reason maybe  :  " << strerror(errno) << "   " << __FILE__ << ":" \
       << __LINE__ << "    " << __PRETTY_FUNCTION__;
 #define LOG_FATAL(msg)                                           \
-  BOOST_LOG_SEV(LogInit::GetLogger(), fatal)                              \
+  BOOST_LOG_SEV(LogInit::GetLogger(), fatal)                     \
       << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
       << __PRETTY_FUNCTION__;
 #else
@@ -118,26 +118,15 @@ class LogTime {
     return ch;
   }
 };
-#define LOG_TRACE(msg)                                                        \
-  std::cout << "[TRACE]    [" << LogTime::GetTimeNow() << "]    "             \
-            << "[" << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
-            << __PRETTY_FUNCTION__ << "]" << std::endl;
-#define LOG_DEBUG(msg)                                                        \
-  std::cout << "[DEBUG]    [" << LogTime::GetTimeNow() << "]    "             \
-            << "[" << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
-            << __PRETTY_FUNCTION__ << "]" << std::endl;
-#define LOG_INFO(msg)                                                         \
-  std::cout << "[INFO]    [" << LogTime::GetTimeNow() << "]    "              \
-            << "[" << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
-            << __PRETTY_FUNCTION__ << "]" << std::endl;
-#define LOG_WARNING(msg)                                                   \
-  std::cerr << "[WARNING]    [" << LogTime::GetTimeNow() << "]    "        \
-            << "[" msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
-            << __PRETTY_FUNCTION__ << "]" << std::endl;
-#define LOG_ERROR(msg)                                                     \
-  std::cerr << "[ERROR]    [" << LogTime::GetTimeNow() << "]    "          \
-            << "[" msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
-            << __PRETTY_FUNCTION__ << "]" << std::endl;
+#define LOG_BASE(msg)                                                         \
+  "    [" << LogTime::GetTimeNow() << "]    "                                 \
+          << "[" << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
+          << __PRETTY_FUNCTION__ << "]" << std::endl;
+#define LOG_TRACE(msg) std::cout << "[TRACE]" << LOG_BASE(msg)
+#define LOG_DEBUG(msg) std::cout << "[DEBUG]" << LOG_BASE(msg)
+#define LOG_INFO(msg) std::cout << "[INFO]" << LOG_BASE(msg)
+#define LOG_WARNING(msg) std::cerr << "[WARNING]" << LOG_BASE(msg)
+#define LOG_ERROR(msg) std::cerr << "[ERROR]" << LOG_BASE(msg)
 //只是一个参考，调用errno检查错误
 #define LOG_PERROR(msg)                                                        \
   std::cerr < "[ERROR]    [" << LogTime::GetTimeNow() << "]    "               \
@@ -145,10 +134,7 @@ class LogTime {
                              << " reason maybe  :  " << strerror(errno)        \
                              << "   " << __FILE__ << ":" << __LINE__ << "    " \
                              << __PRETTY_FUNCTION__ << "]" << std::endl;
-#define LOG_FATAL(msg)                                                     \
-  std::cerr << "[FATAL]    [" << LogTime::GetTimeNow() << "]    "          \
-            << "[" msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
-            << __PRETTY_FUNCTION__ << "]" << std::endl;
+#define LOG_FATAL(msg) std::cerr << "[FATAL]" << LOG_BASE
 namespace LogInit {
 inline int log_init() { return 0; }
 }  // namespace LogInit
@@ -165,6 +151,6 @@ inline int log_init() { return 0; }
 #define RAW_COUT(msg) LOG_RAW_COUT(msg);
 #define RAW_CLINE(msg) LOG_RAW_CLINE(msg);
 #define RAW_PRINTF(fmt, args...) printf(fmt, ##args);
-#define RAW_PLINE(fmt, args...) printf(fmt, ##args); \
+#define RAW_PLINE(fmt, args...) \
+  printf(fmt, ##args);          \
   printf("\n");
-
