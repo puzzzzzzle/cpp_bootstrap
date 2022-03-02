@@ -79,7 +79,7 @@ class TimeGap {
    * 获取和开始时间相差的微秒数
    * @return 微秒数
    */
-  inline long gap() {
+  inline int64_t gap() {
     timeval end{};
     if (gettimeofday(&end, nullptr)) {
       return -1;
@@ -89,16 +89,20 @@ class TimeGap {
   }
 
   /**
-   * 获取和开始时间相差的秒数
-   * @return 秒数
+   * 获取和开始时间相差
+   * @return 秒
    */
-  inline long gapSec() {
-    timeval end{};
-    if (gettimeofday(&end, nullptr)) {
-      return -1;
-    }
-    return (end.tv_sec - start.tv_sec);
-  }
+  inline int64_t gapSec() { return std::round((double)gap() / 1000000); }
+  /**
+   * 获取和开始时间相差
+   * @return 毫秒
+   */
+  inline int64_t gapMs() { return std::round((double)gap() / 1000); }
+  /**
+   * 获取和开始时间相差
+   * @return 微秒
+   */
+  inline int64_t gapUs() { return gap(); }
 
   inline int resetStart(const timeval &_start) {
     start = _start;
@@ -110,6 +114,7 @@ class TimeGap {
   private:
   timeval start{};
 };
+
 class TimeTools {
   public:
   static void SleepMicro(long microSeconds) {
