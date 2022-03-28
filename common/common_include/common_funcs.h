@@ -119,11 +119,6 @@ inline char randChar() {
   return readadbleChar[rand() % (strlen(readadbleChar))];
 }
 
-template <class T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
-  std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, ","));
-  return os;
-}
 
 template <class T>
 std::ostream& printArr(std::ostream& os, size_t len, const T value[]) {
@@ -153,31 +148,6 @@ bool checkDuplicated(int len, T value[]) {
     }
   }
   return true;
-}
-template <typename T>
-std::string VecLikeToString(const T& vec) {
-  if (vec.empty()) {
-    return "[]";
-  }
-  std::ostringstream oss{};
-  oss << "[";
-  for (const auto& item : vec) {
-    oss << item << ",";
-  }
-  oss.seekp(-1, std::ios_base::end);
-  oss << "]";
-  return oss.str();
-}
-template <typename T>
-std::string MapLikeToString(const T& vec, const std::string& lineGap = "") {
-  std::ostringstream oss{};
-  oss << "[";
-  for (const auto& item : vec) {
-    oss << "{" << item.first << "," << item.second << "}" << lineGap << ",";
-  }
-  oss.seekp(-1, std::ios_base::end);
-  oss << "]";
-  return oss.str();
 }
 template <class ItemType>
 bool InContainer(const ItemType& item, const std::vector<ItemType>& container) {
