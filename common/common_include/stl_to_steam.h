@@ -2,12 +2,32 @@
  * @author puzzzzle
  * @mail 2359173906@qq.com
  * @desc
- * stl 容器to_string 或者 输出到 ostream, 并自带operator<< 操作符
+ * stl 容器 转为字符串 或者 输出到 ostream, 并支持 operator<< 操作符
+ *
+ * 如果一个stl容器的 value_type 满足以下3个条件之一
+ *(关联容器需要K,V分别满足3个条件之一) : 或者: 支持 operator<< 操作符 或者:
+ *提供满足 default_value_to_stream 格式的接口 或者: 自身也是stl容器,
+ *并且递归的满足这个条件 那么就可以提供一个满足json格式的 to_string 函数,
+ *和同格式的 operator<< 操作符
+ *
+ *
  * 以支持
+ *
+ * 所有stl标准容器:
  * array vector forward_list list
  * set unordered_set multiset unordered_multiset
  * map unordered_map multimap unordered_multimap
- * pair
+ *
+ * 模板元组类:
+ * pair, tuple
+ *
+ * 容器适配器:
+ * 暂未支持
+ *
+ *
+ * 非stl容器如果可以满足 顺序迭代器 格式, 那么也可以被 xxx_to_string/
+ *xxx_to_string_t支持 但是 operator<< 函数需要自行提供
+ *
  * @time 2022/3/28
  * @file stl_to_str.h
  * @version
@@ -44,7 +64,7 @@
 #define STL_TO_STR_SPLIT ","
 #endif
 
-// pair 的输出分割符
+// pair/tuple 的输出分割符
 #ifndef STL_TO_STR_PAIR_START
 #define STL_TO_STR_PAIR_START "("
 #endif
@@ -93,29 +113,27 @@
 template <typename T>
 class default_value_to_stream {
   public:
-  void operator()(::std::ostream &os, const T &v) { os << v; }
+  static void to_stream(::std::ostream &os, const T &v) { os << v; }
 };
 // 匹配 单值 顺序容器
 template <typename T,
           typename TW = default_value_to_stream<
               typename ::std::remove_reference<T>::type::value_type>>
-::std::ostream &vec_like_to_string_t(
+::std::ostream &vec_like_to_stream(
     ::std::ostream &os, const T &vec,
     const ::std::string &start = STL_TO_STR_START,
     const ::std::string &end = STL_TO_STR_END,
     const ::std::string &split = STL_TO_STR_SPLIT) {
-  TW to_str{};
   os << start;
   auto it = vec.cbegin();
   // 忽略最后一个数据, 按照json格式, 不能输出分割符
-  if(it!=vec.cend())
-  {
-    to_str(os, *it);
+  if (it != vec.cend()) {
+    TW::to_stream(os, *it);
     ++it;
   }
   while (it != vec.cend()) {
     os << split;
-    to_str(os, *it);
+    TW::to_stream(os, *it);
     ++it;
   }
   os << end;
@@ -128,35 +146,31 @@ template <typename T,
           typename TW = default_value_to_stream<typename T::value_type>>
 ::std::string vec_like_to_string(const T &vec) {
   ::std::ostringstream oss{};
-  vec_like_to_string_t<T, TW>(oss, vec);
+  vec_like_to_stream<T, TW>(oss, vec);
   return oss.str();
 }
 
 // 匹配关联容器
 template <typename K, typename T, typename KW = default_value_to_stream<K>,
           typename TW = default_value_to_stream<T>>
-class map_pair_to_stream {
-  KW _M_k_to_steam{};
-  TW _M_t_to_steam{};
-
+class map_pair_to_stream_trait {
   public:
-  ::std::ostream &operator()(::std::ostream &os, const ::std::pair<K, T> &obj) {
+  static void to_stream(::std::ostream &os, const ::std::pair<K, T> &obj) {
     os << STL_TO_STR_MAP_ITEM_START << STL_TO_STR_MAP_KEY_START;
-    _M_k_to_steam(os, obj.first);
+    KW::to_stream(os, obj.first);
     os << STL_TO_STR_MAP_KEY_END << STL_TO_STR_MAP_KEY_SPLIT;
-    _M_t_to_steam(os, obj.second);
+    TW::to_stream(os, obj.second);
     os << STL_TO_STR_MAP_ITEM_END;
-    return os;
   }
 };
 template <typename _Tp,
           typename KW = default_value_to_stream<typename _Tp::key_type>,
           typename TW = default_value_to_stream<typename _Tp::mapped_type>>
-::std::ostream &map_like_to_string_t(::std::ostream &os, const _Tp &map) {
+::std::ostream &map_like_to_stream(::std::ostream &os, const _Tp &map) {
   using MapT = typename ::std::remove_reference<_Tp>::type;
-  return vec_like_to_string_t<
-      _Tp, map_pair_to_stream<typename MapT::key_type,
-                              typename MapT::mapped_type, KW, TW>>(
+  return vec_like_to_stream<
+      _Tp, map_pair_to_stream_trait<typename MapT::key_type,
+                                    typename MapT::mapped_type, KW, TW>>(
       os, map, STL_TO_STR_MAP_START, STL_TO_STR_MAP_END, STL_TO_STR_MAP_SPLIT);
 }
 
@@ -165,20 +179,18 @@ template <typename _Tp,
           typename TW = default_value_to_stream<typename _Tp::mapped_type>>
 ::std::string map_like_to_string(const _Tp &map) {
   ::std::ostringstream oss{};
-  map_like_to_string_t<_Tp, KW, TW>(oss, map);
+  map_like_to_stream<_Tp, KW, TW>(oss, map);
   return oss.str();
 }
 // 匹配pair
 template <typename K, typename T, typename KW = default_value_to_stream<K>,
           typename TW = default_value_to_stream<T>>
-::std::ostream &pair_to_string_t(::std::ostream &os,
-                                 const ::std::pair<K, T> &obj) {
-  KW _M_k_to_steam{};
-  TW _M_v_to_steam{};
+::std::ostream &pair_to_stream(::std::ostream &os,
+                               const ::std::pair<K, T> &obj) {
   os << STL_TO_STR_PAIR_START;
-  _M_k_to_steam(os, obj.first);
+  KW::to_stream(os, obj.first);
   os << STL_TO_STR_PAIR_SPLIT;
-  _M_v_to_steam(os, obj.second);
+  TW::to_stream(os, obj.second);
   os << STL_TO_STR_PAIR_END;
   return os;
 }
@@ -186,12 +198,40 @@ template <typename K, typename T, typename KW = default_value_to_stream<K>,
           typename TW = default_value_to_stream<T>>
 ::std::string pair_to_string(const ::std::pair<K, T> &obj) {
   ::std::ostringstream oss{};
-  pair_to_string_t<K, T, KW, TW>(oss, obj);
+  pair_to_stream<K, T, KW, TW>(oss, obj);
   return oss.str();
 }
-// 不能直接重载一个通配符T, 要重载::std::xxx<T>, 因为这会和全局的符号冲突,
-// 例如 ::std::vector<char>  和::std::string 会有歧义, 两者都能匹配成功
-
+// tuple 比较需要模板递归展开, 不能迭代
+template <typename Tuple, size_t N>
+struct tuple_to_string_trait {
+  static void to_stream(::std::ostream &os, const Tuple &t) {
+    tuple_to_string_trait<Tuple, N - 1>::to_stream(os, t);
+    os << STL_TO_STR_PAIR_SPLIT << ::std::get<N - 1>(t);
+  }
+};
+// 类模板的特化版本
+template <typename Tuple>
+struct tuple_to_string_trait<Tuple, 1> {
+  static void to_stream(::std::ostream &os, const Tuple &t) {
+    os << ::std::get<0>(t);
+  }
+};
+template <typename... _Elements>
+::std::ostream &tuple_to_stream(::std::ostream &os,
+                                const ::std::tuple<_Elements...> &t) {
+  os << STL_TO_STR_PAIR_START;
+  tuple_to_string_trait<decltype(t), sizeof...(_Elements)>::to_stream(t, os);
+  os << STL_TO_STR_PAIR_END;
+  return os;
+}
+template <typename... _Elements>
+::std::string tuple_to_string(const ::std::tuple<_Elements...> &t) {
+  ::std::stringstream os{};
+  os << STL_TO_STR_PAIR_START;
+  tuple_to_string_trait<decltype(t), sizeof...(_Elements)>::to_stream(t, os);
+  os << STL_TO_STR_PAIR_END;
+  return os.str();
+}
 // 运算符重载
 namespace std {
 
@@ -199,56 +239,56 @@ namespace std {
 template <typename T, typename _Alloc, typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(::std::ostream &os,
                            const ::std::vector<T, _Alloc> &vec) {
-  return vec_like_to_string_t<decltype(vec), TW>(os, vec);
+  return vec_like_to_stream<decltype(vec), TW>(os, vec);
 }
 template <typename T, ::std::size_t _Nm,
           typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(::std::ostream &os,
                            const ::std::array<T, _Nm> &vec) {
-  return vec_like_to_string_t<decltype(vec), TW>(os, vec);
+  return vec_like_to_stream<decltype(vec), TW>(os, vec);
 }
 template <typename T, typename _Alloc, typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(::std::ostream &os,
                            const ::std::forward_list<T, _Alloc> &vec) {
-  return vec_like_to_string_t<decltype(vec), TW>(os, vec);
+  return vec_like_to_stream<decltype(vec), TW>(os, vec);
 }
 
 template <typename T, typename _Alloc, typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(::std::ostream &os,
                            const ::std::list<T, _Alloc> &vec) {
-  return vec_like_to_string_t<decltype(vec), TW>(os, vec);
+  return vec_like_to_stream<decltype(vec), TW>(os, vec);
 }
 template <typename T, typename _Alloc, typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(::std::ostream &os,
                            const ::std::deque<T, _Alloc> &vec) {
-  return vec_like_to_string_t<decltype(vec), TW>(os, vec);
+  return vec_like_to_stream<decltype(vec), TW>(os, vec);
 }
 // 匹配单值关联容器
 template <typename T, typename _Compare, typename _Alloc,
           typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(::std::ostream &os,
                            const ::std::set<T, _Compare, _Alloc> &vec) {
-  return vec_like_to_string_t<decltype(vec), TW>(os, vec);
+  return vec_like_to_stream<decltype(vec), TW>(os, vec);
 }
 template <typename T, typename _Compare, typename _Alloc,
           typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(::std::ostream &os,
                            const ::std::multiset<T, _Compare, _Alloc> &vec) {
-  return vec_like_to_string_t<decltype(vec), TW>(os, vec);
+  return vec_like_to_stream<decltype(vec), TW>(os, vec);
 }
 template <typename T, typename _Compare, typename _Alloc,
           typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(
     ::std::ostream &os,
     const ::std::unordered_multiset<T, _Compare, _Alloc> &vec) {
-  return vec_like_to_string_t<decltype(vec), TW>(os, vec);
+  return vec_like_to_stream<decltype(vec), TW>(os, vec);
 }
 template <typename T, typename _Hash, typename _Pred, typename _Alloc,
           typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(
     ::std::ostream &os,
     const ::std::unordered_set<T, _Hash, _Pred, _Alloc> &vec) {
-  return vec_like_to_string_t<decltype(vec), TW>(os, vec);
+  return vec_like_to_stream<decltype(vec), TW>(os, vec);
 }
 
 // 匹配关联容器
@@ -257,14 +297,14 @@ template <typename K, typename T, typename _Compare, typename _Alloc,
           typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(::std::ostream &os,
                            const ::std::map<K, T, _Compare, _Alloc> &map) {
-  return map_like_to_string_t<decltype(map), KW, TW>(os, map);
+  return map_like_to_stream<decltype(map), KW, TW>(os, map);
 }
 template <typename K, typename T, typename _Compare, typename _Alloc,
           typename KW = default_value_to_stream<K>,
           typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(::std::ostream &os,
                            const ::std::multimap<K, T, _Compare, _Alloc> &map) {
-  return map_like_to_string_t<decltype(map), KW, TW>(os, map);
+  return map_like_to_stream<decltype(map), KW, TW>(os, map);
 }
 template <typename K, typename T, typename _Compare, typename _Alloc,
           typename KW = default_value_to_stream<K>,
@@ -272,7 +312,7 @@ template <typename K, typename T, typename _Compare, typename _Alloc,
 ::std::ostream &operator<<(
     ::std::ostream &os,
     const ::std::unordered_multimap<K, T, _Compare, _Alloc> &map) {
-  return map_like_to_string_t<decltype(map), KW, TW>(os, map);
+  return map_like_to_stream<decltype(map), KW, TW>(os, map);
 }
 template <typename K, typename T, class _Hash, class _Pred, class _Alloc,
           typename KW = default_value_to_stream<K>,
@@ -280,15 +320,23 @@ template <typename K, typename T, class _Hash, class _Pred, class _Alloc,
 ::std::ostream &operator<<(
     ::std::ostream &os,
     const ::std::unordered_map<K, T, _Hash, _Pred, _Alloc> &map) {
-  return map_like_to_string_t<decltype(map), KW, TW>(os, map);
+  return map_like_to_stream<decltype(map), KW, TW>(os, map);
 }
 
 // pair
 template <typename K, typename T, typename KW = default_value_to_stream<K>,
           typename TW = default_value_to_stream<T>>
 ::std::ostream &operator<<(::std::ostream &os, const ::std::pair<K, T> &obj) {
-  return pair_to_string_t<K, T, KW, TW>(os, obj);
+  return pair_to_stream<K, T, KW, TW>(os, obj);
 }
-
+// tuple
+template <typename... _Elements>
+::std::ostream &operator<<(::std::ostream &os,
+                           const ::std::tuple<_Elements...> &t) {
+  os << STL_TO_STR_PAIR_START;
+  tuple_to_string_trait<decltype(t), sizeof...(_Elements)>::to_stream(os, t);
+  os << STL_TO_STR_PAIR_END;
+  return os;
+}
 // 容器适配器 stack queue priority_queue
 }  // namespace std
