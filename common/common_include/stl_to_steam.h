@@ -5,18 +5,25 @@
  * stl 容器 转为字符串 或者 输出到 ostream, 并支持 operator<< 操作符
  *
  * 如果一个stl容器的 value_type 满足以下3个条件之一
- *(关联容器需要K,V分别满足3个条件之一) : 或者: 支持 operator<< 操作符 或者:
- *提供满足 default_value_to_stream 格式的接口 或者: 自身也是stl容器,
- *并且递归的满足这个条件 那么就可以提供一个满足json格式的 to_string 函数,
- *和同格式的 operator<< 操作符
+ * (关联容器需要K,V分别满足3个条件之一) :
+ *
+ * 或者: 支持 operator<< 操作符
+ *
+ * 或者: 提供满足 default_value_to_stream 格式的接口
+ *
+ * 或者: 自身也是stl容器,并且递归的满足这个条件
+ *
+ * 那么就可以提供一个满足json格式的to_string 函数,和同格式的 operator<< 操作符
  *
  *
  * 以支持
  *
  * 所有stl标准容器:
- * array vector forward_list list
- * set unordered_set multiset unordered_multiset
- * map unordered_map multimap unordered_multimap
+ * 单值顺序容器: array vector forward_list list
+ * 单值关联容器: set unordered_set multiset unordered_multiset
+ * 关联容器: map unordered_map multimap unordered_multimap
+ *
+ * 非容器类:
  *
  * 模板元组类:
  * pair, tuple
@@ -25,8 +32,9 @@
  * 暂未支持
  *
  *
- * 非stl容器如果可以满足 顺序迭代器 格式, 那么也可以被 xxx_to_string/
- *xxx_to_string_t支持 但是 operator<< 函数需要自行提供
+ * 非stl容器如果可以满足 顺序迭代器 格式, 那么也可以被 xxx_to_stream/
+ * xxx_to_string 支持
+ * 但是 operator<< 函数需要自行提供!
  *
  * @time 2022/3/28
  * @file stl_to_str.h
