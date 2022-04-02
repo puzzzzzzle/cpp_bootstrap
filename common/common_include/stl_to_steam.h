@@ -108,19 +108,15 @@ template <typename T,
   os << start;
   auto it = vec.cbegin();
   // 忽略最后一个数据, 按照json格式, 不能输出分割符
-  auto it_next = it;
-  ++it_next;
-  while (it != vec.cend()) {
+  if(it!=vec.cend())
+  {
     to_str(os, *it);
-    os << split;
     ++it;
-    ++it_next;
-    if (it_next == vec.cend()) {
-      break;
-    }
   }
-  if (it != vec.cend()) {
+  while (it != vec.cend()) {
+    os << split;
     to_str(os, *it);
+    ++it;
   }
   os << end;
 #ifdef STL_TO_STR_WITH_COUNT
