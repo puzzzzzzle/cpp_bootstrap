@@ -28,8 +28,8 @@
  * 模板元组类:
  * pair, tuple
  *
- * 容器适配器:
- * 暂未支持
+ * 所有stl容器适配器:
+ * stack, queue, priority_queue
  *
  *
  * 非stl容器如果可以满足 顺序迭代器 格式, 那么也可以被 xxx_to_stream/
