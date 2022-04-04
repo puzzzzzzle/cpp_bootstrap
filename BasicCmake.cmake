@@ -17,7 +17,7 @@ if (NOT IGNORE_CONAN)
             ERROR_VARIABLE _RES
     )
     message("conan install end ${_RES}")
-    set(CONAN_DISABLE_CHECK_COMPILER "true")
+#    set(CONAN_DISABLE_CHECK_COMPILER "true")
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup()
     message("conan get libs\t${CONAN_LIBS}\n")
@@ -26,6 +26,23 @@ else ()
     add_definitions(-DIGNORE_CONAN)
 endif ()
 
+if (CMAKE_COMPILER_IS_GNUCC)
+    execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpfullversion -dumpversion
+            OUTPUT_VARIABLE GCC_VERSION)
+    string(REGEX MATCHALL "[0-9]+" GCC_VERSION_COMPONENTS ${GCC_VERSION})
+    list(GET GCC_VERSION_COMPONENTS 0 GCC_MAJOR)
+    list(GET GCC_VERSION_COMPONENTS 1 GCC_MINOR)
+    message(STATUS "cmake version=${CMAKE_VERSION}")
+    set(GCC_VERSION "${GCC_MAJOR}.${GCC_MINOR}")
+    message(STATUS "gcc version=${GCC_VERSION}")
+    message(STATUS "gcc version major=${GCC_MAJOR}")
+    message(STATUS "gcc version minor=${GCC_MINOR}")
+
+    if (GCC_VERSION GREATER "7")
+        # gtest needs to be set “_GLIBCXX_USE_CXX11_ABI=0” if gcc version greater than 7
+        add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+    endif()
+endif()
 
 
 
