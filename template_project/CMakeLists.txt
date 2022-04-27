@@ -26,7 +26,10 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # 设置源码根目录(包含cmake的文件夹将被解析为一个编译target)
-set(SRC_DIR_ROOT ${CMAKE_SOURCE_DIR}/src)
+# 设置源码根目录(包含cmake的文件夹将被解析为一个编译target)
+set(SRC_DIR_ROOTS "")
+list(APPEND SRC_DIR_ROOTS ${CMAKE_SOURCE_DIR}/src)
+#list (APPEND SRC_DIR_ROOTS ${CMAKE_SOURCE_DIR}/src)
 # 设置配目录(运行时拷贝)
 set(CONFIG_DIR ${CMAKE_SOURCE_DIR}/data)
 # 设置 boostStrap 文件夹名
