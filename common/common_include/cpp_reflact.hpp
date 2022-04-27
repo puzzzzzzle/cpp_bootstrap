@@ -8,6 +8,7 @@
  * version        author            desc
  * 1.0            puzzzzzzle       create
  ************************************************/
+#pragma once
 
 #include <iostream>
 #include <map>
