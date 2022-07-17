@@ -10,10 +10,7 @@
  ************************************************/
 
 #pragma once
-#ifdef USE_CONAN
 #include <gtest/gtest.h>
-#endif
-
 #include <thread>
 
 #include "common_funcs.h"
