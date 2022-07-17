@@ -240,7 +240,7 @@ endfunction()
 
 # 查找公用依赖
 function(FindCommonLib)
-    set(LIBS_LIST "")
+    set(LIBS_LIST ${COMMON_LIBS})
     list(APPEND LIBS_LIST "pthread")
 
     if (USE_CONAN)
@@ -253,32 +253,41 @@ function(FindCommonLib)
                 ERROR_VARIABLE _RES
         )
         message("conan install end ${_RES}")
-        #    set(CONAN_DISABLE_CHECK_COMPILER "true")
         include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
         conan_basic_setup()
         message("conan get libs\t${LIBS_LIST}\n")
-        add_definitions(-DUSE_CONAN)
     else ()
-        add_definitions(-DIGNORE_CONAN)
-
-        find_package(Boost COMPONENTS regex system log filesystem REQUIRED)
-        if (Boost_FOUND)
-            include_directories(${Boost_INCLUDE_DIRS})
-            message("boost find ${Boost_INCLUDE_DIRS} ${Boost_LIBRARIES}")
-            list(APPEND LIBS_LIST ${Boost_LIBRARIES})
-        endif ()
-
         find_package(GTest REQUIRED)
         message("GTest find ${GTEST_INCLUDE_DIRS} ${GTEST_LIBRARIES}")
         list(APPEND LIBS_LIST ${GTEST_LIBRARIES})
-        if (GCC_VERSION GREATER "7")
-            # 最新的gtest修复了这个问题， 不用再加这个选项了
-            # gtest needs to be set “_GLIBCXX_USE_CXX11_ABI=0” if gcc version greater than 7
-            #            message("gtest needs to be set “_GLIBCXX_USE_CXX11_ABI=0” if gcc version greater than 7")
-            #            add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-        endif ()
+        #        if (GCC_VERSION GREATER "7")
+        # 最新的gtest修复了这个问题， 不用再加这个选项了
+        # gtest needs to be set “_GLIBCXX_USE_CXX11_ABI=0” if gcc version greater than 7
+        #            message("gtest needs to be set “_GLIBCXX_USE_CXX11_ABI=0” if gcc version greater than 7")
+        #            add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+        #        endif ()
     endif ()
     message("LIBS_LIST ${LIBS_LIST}")
     set(COMMON_LIBS ${LIBS_LIST} PARENT_SCOPE)
 
+endfunction()
+
+function(FindBoostLib components_list)
+    set(LIBS_LIST ${COMMON_LIBS})
+    message("need boost components ${${components_list}}")
+    find_package(Boost COMPONENTS ${${components_list}} REQUIRED)
+    if (Boost_FOUND)
+        include_directories(${Boost_INCLUDE_DIRS})
+        message("boost find ${Boost_INCLUDE_DIRS} ${Boost_LIBRARIES}")
+        list(APPEND LIBS_LIST ${Boost_LIBRARIES})
+    endif ()
+    set(COMMON_LIBS ${LIBS_LIST} PARENT_SCOPE)
+endfunction()
+
+function(OpenCoroutine)
+    if (APPLE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines-ts" PARENT_SCOPE)
+    elseif (WIN32 OR UNIX)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines" PARENT_SCOPE)
+    endif ()
 endfunction()
