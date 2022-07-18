@@ -1,0 +1,30 @@
+# Build and run:
+#   docker build -t puzzzzzzle/clion_local:0.1 -f Dockerfile.clion_local .
+#   note : still cannot start debug
+FROM ubuntu:22.04
+
+RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get -y install tzdata
+
+RUN apt-get update \
+  && apt-get install -y \
+      \
+      gcc-11 \
+      g++-11 \
+      build-essential \
+      python3 \
+      libgtest-dev \
+      libboost-all-dev \
+      \
+      python3-dev \
+      gdb \
+      clang \
+      make \
+      ninja-build \
+      cmake \
+      autoconf \
+      automake \
+      locales-all \
+      dos2unix \
+      rsync \
+      tar \
+  && apt-get clean
