@@ -2,7 +2,7 @@
 #
 # Build and run:
 #   docker build -t Dockerfile.clion_remote:0.1 -f Dockerfile.clion_remote .
-#   docker run -d --cap-add sys_ptrace -p127.0.0.1:30022:22 --name clion_remote_env clion/remote-cpp-env:0.5
+#   docker run -d --cap-add sys_ptrace -p 30022:22 --name clion_remote_env clion/remote-cpp-env:0.5
 #
 # stop:
 #   docker stop clion_remote_env
