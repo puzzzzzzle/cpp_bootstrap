@@ -134,7 +134,7 @@ function(download_and_extract)
 endfunction()
 
 # 开启 asm 支持
-function(OPEN_ASM_SUPPORT)
+function(OpenAsmSupport)
     set(CMAKE_NASM_LINK_EXECUTABLE "ld <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>" PARENT_SCOPE)
     set(CAN_USE_ASSEMBLER TRUE PARENT_SCOPE)
     set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64 PARENT_SCOPE)
