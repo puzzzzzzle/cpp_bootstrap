@@ -8,8 +8,9 @@
  * version        author            desc
  * 1.0            puzzzzzzle       create
  ************************************************/
-#include <errno.h>
-#include <stdio.h>
+#include <cerrno>
+#include <iostream>
+#include <cstdio>
 #ifdef WIN32
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
