@@ -139,8 +139,6 @@ function(OpenAsmSupport)
 
     # 开启nasm支持
     enable_language(ASM_NASM)
-    #    set(CMAKE_NASM_LINK_EXECUTABLE "ld <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>" PARENT_SCOPE)
-    set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64 PARENT_SCOPE)
 
     # 开启gas(at&t)支持
     enable_language(ASM)
