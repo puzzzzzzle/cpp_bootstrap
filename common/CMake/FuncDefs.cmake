@@ -21,10 +21,9 @@ function(AddAllSubDir)
             if (NOT EXISTS "${dir}/CMakeLists.txt")
                 continue()
             endif ()
-            string(REPLACE "${SRC_DIR_ROOT}/" "" relative_dir ${dir})
-            get_filename_component(build_dir_name ${dir} NAME)
+            # 给个默认目标名字: 相对 CMAKE_SOURCE_DIR 路径
+            string(REPLACE "${CMAKE_SOURCE_DIR}/" "" relative_dir ${dir})
             string(REGEX REPLACE "/" "_" build_temp ${relative_dir})
-            #        message("build_dir_name is:${build_dir_name}; relative_dir is:${relative_dir}; build_temp is: ${build_temp}")
 
             message("- ${build_temp}")
             add_subdirectory(${dir})
