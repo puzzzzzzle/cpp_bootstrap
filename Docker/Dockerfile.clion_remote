@@ -36,8 +36,8 @@ RUN apt-get update \
       rsync \
       tar \
       nasm \
-
-  && apt-get clean
+  && apt-get clean \
+  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 --slave /usr/bin/g++ g++ /usr/bin/g++-12
 
 RUN ( \
     echo 'LogLevel DEBUG2'; \
@@ -48,9 +48,8 @@ RUN ( \
   && mkdir /run/sshd
 
 RUN useradd -m user \
-  && yes password | passwd user
-
-RUN usermod -s /bin/bash user
+  && yes password | passwd user \
+  && usermod -s /bin/bash user
 
 EXPOSE 22
 
