@@ -35,6 +35,7 @@ RUN apt-get update \
       dos2unix \
       rsync \
       tar \
+      nasm \
 
   && apt-get clean
 
