@@ -1,21 +1,16 @@
-# CLion remote docker environment (How to build docker container, run and stop it)
-#
-# Build and run:
-#   docker build -t puzzzzzzle/clion_remote:0.3 -f Dockerfile.clion_remote .
-#   docker run -d --cap-add sys_ptrace -p 30022:22 --name clion_remote_dev puzzzzzzle/clion_remote
-#
-# stop:
-#   docker stop clion_remote_env
-#
-# ssh credentials (test user):
-#   user@password
+# change to mirrors.aliyun.com
+RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
+    && sed -i "s/security.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list
 
-FROM ubuntu:22.04
+# RUN sed -i "s@http://.*archive.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list \
+#  && sed -i "s@http://.*security.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
+# install libs
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get -y install tzdata
 
-RUN apt-get update \
-  && apt-get install -y ssh \
+RUN  apt-get install -y  \
+      ssh \
+      tzdata \
       \
       gcc-12 \
       g++-12 \
@@ -74,20 +69,3 @@ RUN cd /tmp \
 #         && ./bootstrap-vcpkg.sh -disableMetrics \
 #         && cp vcpkg /usr/bin \
 #         && cd /tmp && rm -rf vcpkg
-
-
-RUN ( \
-    echo 'LogLevel DEBUG2'; \
-    echo 'PermitRootLogin yes'; \
-    echo 'PasswordAuthentication yes'; \
-    echo 'Subsystem sftp /usr/lib/openssh/sftp-server'; \
-  ) > /etc/ssh/sshd_config_test_clion \
-  && mkdir /run/sshd
-
-RUN useradd -m user \
-  && yes password | passwd user \
-  && usermod -s /bin/bash user
-
-EXPOSE 22
-
-CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]

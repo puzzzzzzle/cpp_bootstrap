@@ -1,7 +1,13 @@
+# syntax = edrevo/dockerfile-plus
+
 # CLion remote docker environment (How to build docker container, run and stop it)
 #
 # Build and run:
-#   docker build -t puzzzzzzle/clion_remote:0.3 -f Dockerfile.clion_remote .
+# environment variable neededs：
+#       export DOCKER_BUILDKIT=1
+#       export COMPOSE_DOCKER_CLI_BUILD=1
+
+#   docker build -t puzzzzzzle/clion_remote:0.3 -f clion_remote.DockerFile .
 #   docker run -d --cap-add sys_ptrace -p 30022:22 --name clion_remote_dev puzzzzzzle/clion_remote
 #
 # stop:
@@ -12,31 +18,9 @@
 
 FROM ubuntu:22.04
 
-RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get -y install tzdata
 
-RUN apt-get update \
-  && apt-get install -y ssh \
-      \
-      gcc-12 \
-      g++-12 \
-      build-essential \
-      python3 \
-      libgtest-dev \
-      libboost-all-dev \
-      \
-      gdb \
-      clang \
-      make \
-      ninja-build \
-      cmake \
-      autoconf \
-      automake \
-      locales-all \
-      dos2unix \
-      rsync \
-      tar \
+INCLUDE+ base_libs.DockerFile
 
-  && apt-get clean
 
 RUN ( \
     echo 'LogLevel DEBUG2'; \
@@ -47,9 +31,8 @@ RUN ( \
   && mkdir /run/sshd
 
 RUN useradd -m user \
-  && yes password | passwd user
-
-RUN usermod -s /bin/bash user
+  && yes password | passwd user \
+  && usermod -s /bin/bash user
 
 EXPOSE 22
 
