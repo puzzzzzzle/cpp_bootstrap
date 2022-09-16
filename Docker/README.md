@@ -1,5 +1,6 @@
 # docker build 依赖
-使用了 docker plus 插件， 需要添加以下环境变量
+
+~~ 使用了 docker plus 插件， 需要添加以下环境变量 ~~ 已经不再使用这种方式了, 忽略
 ```shell
 export DOCKER_BUILDKIT=1 &&export COMPOSE_DOCKER_CLI_BUILD=1
 ```

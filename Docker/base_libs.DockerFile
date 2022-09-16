@@ -8,38 +8,65 @@ RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get -y install tzdata
 
+# basic env
 RUN  apt-get install -y  \
-      ssh \
-      tzdata \
-      \
-      gcc-12 \
-      g++-12 \
-      build-essential \
-      nasm \
-      python3 \
-      python3-pip \
-      libgtest-dev \
-      libboost-all-dev \
-      \
-      gdb \
-      clang \
-      make \
-      ninja-build \
-      cmake \
-      autoconf \
-      automake \
-      locales-all \
-      dos2unix \
-      rsync \
-      tar \
-      git \
-      curl \
-      zip \
-      unzip \
-  && apt-get clean \
-  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 --slave /usr/bin/g++ g++ /usr/bin/g++-12 \
-  && pip3 install conan
+     \
+     gcc-12 \
+     g++-12 \
+     build-essential \
+     nasm \
+     gdb \
+     clang \
+     make \
+     ninja-build \
+     cmake \
+     autoconf \
+     automake \
+     python3-pip \
+     python3 \
+     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 --slave /usr/bin/g++ g++ /usr/bin/g++-12 \
+     && apt-get clean
 
+# linux kernel build needs
+# for build speed, only install qemu-system-x86_64
+RUN  apt-get install -y  \
+     qemu-system-x86_64 \
+     kernel-package \
+     fakeroot \
+     libncurses5-dev \
+     libssl-dev \
+     ccache \
+     flex \
+     bison \
+     libelf-dev \
+     && apt-get clean
+
+
+# tools
+RUN  apt-get install -y  \
+     ssh \
+     locales-all \
+     dos2unix \
+     rsync \
+     tar \
+     git \
+     curl \
+     zip \
+     unzip \
+     vim \
+     && apt-get clean
+
+# 3rd libs
+RUN  apt-get install -y  \
+     libgtest-dev \
+     libboost-all-dev \
+     && apt-get clean
+
+# python libs
+RUN pip3 install -y \
+    conan
+
+# build libs
 # build libunifex
 RUN cd /tmp \
         && git clone https://github.com/facebookexperimental/libunifex.git \
@@ -51,7 +78,7 @@ RUN cd /tmp \
         && cd /tmp && rm -rf libunifex
 
 # build libgo
-# not support c20
+# not support c++20
 # RUN cd /tmp \
 #         && git clone https://github.com/yyzybb537/libgo.git \
 #         && cd libgo \
