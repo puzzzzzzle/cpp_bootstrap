@@ -19,6 +19,8 @@
 FROM ubuntu:22.04
 
 
+################## libs start
+
 # change to mirrors.aliyun.com
 RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
     && sed -i "s/security.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list
@@ -51,15 +53,15 @@ RUN  apt-get install -y  \
 # linux kernel build needs
 # for build speed, only install qemu-system-x86_64
 RUN  apt-get install -y  \
-     qemu-system-x86_64 \
-     kernel-package \
+     qemu-system-x86 \
      fakeroot \
-     libncurses5-dev \
+     ncurses-dev \
+     xz-utils \
      libssl-dev \
-     ccache \
+     bc \
      flex \
-     bison \
      libelf-dev \
+     bison \
      && apt-get clean
 
 
@@ -84,7 +86,7 @@ RUN  apt-get install -y  \
      && apt-get clean
 
 # python libs
-RUN pip3 install -y \
+RUN pip3 install \
     conan
 
 # build libs
@@ -118,6 +120,8 @@ RUN cd /tmp \
 #         && cp vcpkg /usr/bin \
 #         && cd /tmp && rm -rf vcpkg
 
+
+################## libs end
 
 
 RUN ( \

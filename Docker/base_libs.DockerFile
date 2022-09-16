@@ -30,15 +30,15 @@ RUN  apt-get install -y  \
 # linux kernel build needs
 # for build speed, only install qemu-system-x86_64
 RUN  apt-get install -y  \
-     qemu-system-x86_64 \
-     kernel-package \
+     qemu-system-x86 \
      fakeroot \
-     libncurses5-dev \
+     ncurses-dev \
+     xz-utils \
      libssl-dev \
-     ccache \
+     bc \
      flex \
-     bison \
      libelf-dev \
+     bison \
      && apt-get clean
 
 
@@ -63,7 +63,7 @@ RUN  apt-get install -y  \
      && apt-get clean
 
 # python libs
-RUN pip3 install -y \
+RUN pip3 install \
     conan
 
 # build libs
