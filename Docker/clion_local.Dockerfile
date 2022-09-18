@@ -7,9 +7,6 @@
 #   docker build -t puzzzzzzle/clion_local:0.1 -f clion_local.Dockerfile .
 FROM ubuntu:22.04
 
-
-################## libs start
-
 # change to mirrors.aliyun.com
 RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
     && sed -i "s/security.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list
@@ -39,6 +36,13 @@ RUN  apt-get install -y  \
      && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 --slave /usr/bin/g++ g++ /usr/bin/g++-12 \
      && apt-get clean
 
+# 3rd libs
+RUN  apt-get install -y  \
+     libgtest-dev \
+     libboost-all-dev \
+     && apt-get clean
+
+
 # linux kernel build needs
 # for build speed, only install qemu-system-x86_64
 RUN  apt-get install -y  \
@@ -51,6 +55,7 @@ RUN  apt-get install -y  \
      flex \
      libelf-dev \
      bison \
+     cpio \
      && apt-get clean
 
 
@@ -68,12 +73,6 @@ RUN  apt-get install -y  \
      vim \
      && apt-get clean
 
-# 3rd libs
-RUN  apt-get install -y  \
-     libgtest-dev \
-     libboost-all-dev \
-     && apt-get clean
-
 # python libs
 RUN pip3 install \
     conan
@@ -81,13 +80,13 @@ RUN pip3 install \
 # build libs
 # build libunifex
 RUN cd /tmp \
-        && git clone https://github.com/facebookexperimental/libunifex.git \
-        && cd libunifex \
-        && cmake -G Ninja -H. -Bbuild -DCMAKE_CXX_STANDARD:STRING=20 -DCMAKE_INSTALL_PREFIX=/usr \
-        && cd build \
-        && ninja \
-        && ninja install \
-        && cd /tmp && rm -rf libunifex
+    && git clone https://github.com/facebookexperimental/libunifex.git \
+    && cd libunifex \
+    && cmake -G Ninja -H. -Bbuild -DCMAKE_CXX_STANDARD:STRING=20 -DCMAKE_INSTALL_PREFIX=/usr \
+    && cd build \
+    && ninja \
+    && ninja install \
+    && cd /tmp && rm -rf libunifex
 
 # build libgo
 # not support c++20

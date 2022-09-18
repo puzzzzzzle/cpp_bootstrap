@@ -27,6 +27,13 @@ RUN  apt-get install -y  \
      && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 --slave /usr/bin/g++ g++ /usr/bin/g++-12 \
      && apt-get clean
 
+# 3rd libs
+RUN  apt-get install -y  \
+     libgtest-dev \
+     libboost-all-dev \
+     && apt-get clean
+
+
 # linux kernel build needs
 # for build speed, only install qemu-system-x86_64
 RUN  apt-get install -y  \
@@ -39,6 +46,7 @@ RUN  apt-get install -y  \
      flex \
      libelf-dev \
      bison \
+     cpio \
      && apt-get clean
 
 
@@ -54,12 +62,6 @@ RUN  apt-get install -y  \
      zip \
      unzip \
      vim \
-     && apt-get clean
-
-# 3rd libs
-RUN  apt-get install -y  \
-     libgtest-dev \
-     libboost-all-dev \
      && apt-get clean
 
 # python libs
