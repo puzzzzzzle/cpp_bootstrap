@@ -84,6 +84,8 @@ RUN cd /tmp \
 RUN  apt-get install -y  \
      pybind11-dev \
      rapidjson-dev \
+     libopencv-dev \
+     python3-opencv \
      && apt-get clean
 
 
