@@ -7,8 +7,8 @@
 #       export DOCKER_BUILDKIT=1
 #       export COMPOSE_DOCKER_CLI_BUILD=1
 
-#   docker build -t puzzzzzzle/clion_remote:0.3 -f clion_remote.DockerFile .
-#   docker run -d --cap-add sys_ptrace -p 30022:22 --name clion_remote_dev puzzzzzzle/clion_remote
+#   docker build -t puzzzzzzle/clion_remote:0.6.1 -f clion_remote.DockerFile .
+#   docker run -d --cap-add sys_ptrace -p 30022:22 --name cb puzzzzzzle/clion_remote:0.6.1
 #
 # stop:
 #   docker stop clion_remote_env
@@ -101,6 +101,14 @@ RUN cd /tmp \
     && ninja \
     && ninja install \
     && cd /tmp && rm -rf libunifex
+
+
+# libs
+RUN  apt-get install -y  \
+     pybind11-dev \
+     rapidjson-dev \
+     && apt-get clean
+
 
 # build libgo
 # not support c++20

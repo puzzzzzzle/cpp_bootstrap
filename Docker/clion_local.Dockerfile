@@ -88,6 +88,14 @@ RUN cd /tmp \
     && ninja install \
     && cd /tmp && rm -rf libunifex
 
+
+# libs
+RUN  apt-get install -y  \
+     pybind11-dev \
+     rapidjson-dev \
+     && apt-get clean
+
+
 # build libgo
 # not support c++20
 # RUN cd /tmp \
