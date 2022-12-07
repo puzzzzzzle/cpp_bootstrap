@@ -269,6 +269,7 @@ function(FindCommonLib)
 
 endfunction()
 
+# 查找boost
 function(FindBoostLib components_list)
     set(LIBS_LIST ${COMMON_LIBS})
     message("need boost components ${${components_list}}")
@@ -281,6 +282,7 @@ function(FindBoostLib components_list)
     set(COMMON_LIBS ${LIBS_LIST} PARENT_SCOPE)
 endfunction()
 
+# 开启协程
 function(OpenCoroutine)
     if (APPLE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines-ts" PARENT_SCOPE)
