@@ -36,22 +36,22 @@ RUN  apt-get install -y  \
 
 # linux kernel build needs
 # for build speed, only install qemu-system-x86_64
-RUN  apt-get install -y  \
-     qemu-system-x86 \
-     fakeroot \
-     ncurses-dev \
-     xz-utils \
-     libssl-dev \
-     bc \
-     flex \
-     libelf-dev \
-     bison \
-     cpio \
-     && apt-get clean
+#RUN  apt-get update && apt-get install -y  \
+#     qemu-system-x86 \
+#     fakeroot \
+#     ncurses-dev \
+#     xz-utils \
+#     libssl-dev \
+#     bc \
+#     flex \
+#     libelf-dev \
+#     bison \
+#     cpio \
+#     && apt-get clean
 
 
 # tools
-RUN  apt-get install -y  \
+RUN  apt-get update && apt-get install -y  \
      ssh \
      locales-all \
      dos2unix \
@@ -81,7 +81,7 @@ RUN cd /tmp \
 
 
 # libs
-RUN  apt-get install -y  \
+RUN  apt-get update && apt-get install -y  \
      pybind11-dev \
      rapidjson-dev \
      libopencv-dev \
@@ -108,3 +108,6 @@ RUN  apt-get install -y  \
 #         && ./bootstrap-vcpkg.sh -disableMetrics \
 #         && cp vcpkg /usr/bin \
 #         && cd /tmp && rm -rf vcpkg
+
+
+################## libs end
