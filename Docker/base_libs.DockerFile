@@ -62,6 +62,7 @@ RUN  apt-get update && apt-get install -y  \
      zip \
      unzip \
      vim \
+     libfcgi-dev \
      && apt-get clean
 
 # python libs
