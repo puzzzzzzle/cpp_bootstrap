@@ -76,9 +76,17 @@ inline int log_init() {
   return 0;
 }
 }  // namespace LogInit
+template <typename T>
+inline boost::log::formatting_ostream& operator<<(
+    boost::log::formatting_ostream& p, const T& v) {
+  std::ostringstream oss{};
+  oss << v;
+  p << oss.str();
+  return p;
+}
 #define LOG_BASE(msg)                                            \
   << "[" << msg << "]| " << __FILE__ << ":" << __LINE__ << " | " \
-  << __PRETTY_FUNCTION__ << " |" << std::this_thread::get_id()
+  << __PRETTY_FUNCTION__ << " |" << std::this_thread::get_id();
 #define LOG_TRACE(msg)                                                \
   BOOST_LOG_SEV(LogInit::GetLogger(), trivial::severity_level::trace) \
   LOG_BASE(msg)
