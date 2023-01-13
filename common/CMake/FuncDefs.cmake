@@ -202,7 +202,6 @@ function(GenConfig)
     )
     ## 复制配置
     message("${BOOTSTRAP_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-    file(COPY ${BOOTSTRAP_DIR}/common/data DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)
     file(COPY ${CONFIG_DIR} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)
     # 头文件
     include_directories(${BOOTSTRAP_DIR}/common/common_include)
