@@ -62,7 +62,6 @@ RUN  apt-get update && apt-get install -y  \
      zip \
      unzip \
      vim \
-     libfcgi-dev \
      && apt-get clean
 
 # python libs
@@ -87,6 +86,7 @@ RUN  apt-get update && apt-get install -y  \
      rapidjson-dev \
      libopencv-dev \
      python3-opencv \
+     libfcgi-dev \
      && apt-get clean
 
 

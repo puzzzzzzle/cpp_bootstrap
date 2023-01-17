@@ -17,6 +17,16 @@ RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get -y install tzdata
 
+# change to mirrors.aliyun.com
+RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
+    && sed -i "s/security.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list
+
+# RUN sed -i "s@http://.*archive.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list \
+#  && sed -i "s@http://.*security.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
+# install libs
+
+RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get -y install tzdata
+
 # basic env
 RUN  apt-get install -y  \
      \
@@ -71,7 +81,6 @@ RUN  apt-get update && apt-get install -y  \
      zip \
      unzip \
      vim \
-     libfcgi-dev \
      && apt-get clean
 
 # python libs
@@ -96,6 +105,7 @@ RUN  apt-get update && apt-get install -y  \
      rapidjson-dev \
      libopencv-dev \
      python3-opencv \
+     libfcgi-dev \
      && apt-get clean
 
 
