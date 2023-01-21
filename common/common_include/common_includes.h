@@ -11,9 +11,7 @@
 
 #pragma once
 #include <gtest/gtest.h>
-#include <thread>
 
-#include "common_funcs.h"
 #include "log_init.h"
 #include "quick_define.h"
 #include "stl_to_steam.h"

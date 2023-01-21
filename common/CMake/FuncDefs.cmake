@@ -178,6 +178,11 @@ function(SetCommonBuildFlag)
         set(LINK_FLAGS "${LINK_FLAGS} -fPIC")
 
     endif ()
+
+    if (STD_LOG_SYNC)
+        message("std log use lock")
+        add_definitions(-DSTD_LOG_SYNC)
+    endif ()
 endfunction()
 
 # 打印编译选项
