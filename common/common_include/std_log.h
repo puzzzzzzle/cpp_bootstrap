@@ -19,6 +19,7 @@
 #include <atomic>
 #include <mutex>
 namespace LogInit {
+// log 同步锁
 inline std::mutex& get_std_log_lock() {
   static std::mutex lock{};
   return lock;
