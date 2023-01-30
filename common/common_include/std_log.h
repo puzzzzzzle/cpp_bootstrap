@@ -41,16 +41,16 @@ inline std::string log_now_time() {
 }  // namespace LogInit
 
 // log 格式定义
-#define LOG_FORMAT(level, msg)                                            \
-  level << "    [" << LogInit::log_now_time() << "]    "                  \
-        << "[" << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    " \
-        << __PRETTY_FUNCTION__ << "]" << std::endl;
+#define LOG_FORMAT(level, msg)                                                 \
+  "[" << LogInit::get_std_log_count().fetch_add(1) << "] " << level << "    [" \
+      << LogInit::log_now_time() << "]    "                                    \
+      << "[" << msg << "]   [" << __FILE__ << ":" << __LINE__ << "    "        \
+      << __PRETTY_FUNCTION__ << "]" << std::endl;
 #ifdef STD_LOG_SYNC
-#define STD_LOG_DEF(stream, level, msg)                               \
-  {                                                                   \
-    std::unique_lock<std::mutex> lock(LogInit::get_std_log_lock());   \
-    stream << "[" << LogInit::get_std_log_count().fetch_add(1) << "] " \
-           << LOG_FORMAT(level, msg)                                  \
+#define STD_LOG_DEF(stream, level, msg)                             \
+  {                                                                 \
+    std::unique_lock<std::mutex> inner_log_lock(LogInit::get_std_log_lock()); \
+    stream << LOG_FORMAT(level, msg)                                \
   }
 #else
 #define STD_LOG_DEF(stream, level, msg) stream << LOG_FORMAT(level, msg)
