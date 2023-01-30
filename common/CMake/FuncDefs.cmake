@@ -242,6 +242,11 @@ endfunction()
 # 查找公用依赖
 function(FindCommonLib)
     set(LIBS_LIST ${COMMON_LIBS})
+
+    add_library(before_main OBJECT ${BOOTSTRAP_DIR}/common/before_main_funcs/before_main.cpp )
+
+    list(APPEND LIBS_LIST "before_main")
+
     list(APPEND LIBS_LIST "pthread")
 
     if (USE_CONAN)
@@ -286,7 +291,7 @@ function(FindBoostLib components_list)
     if (LOG_USE_BOOST)
         message("log use boost")
         add_definitions(-DLOG_BOOST)
-        list(APPEND ${components_list} log log_setup)
+        list(APPEND ${components_list} log log_setup )
     endif ()
     set(LIBS_LIST ${COMMON_LIBS})
     message("need boost components ${${components_list}}")

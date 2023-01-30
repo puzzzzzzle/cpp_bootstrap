@@ -15,9 +15,3 @@
 #include "log_init.h"
 #include "quick_define.h"
 #include "stl_to_steam.h"
-
-inline int beforeRun() {
-  srand(time(NULL));
-  int iRet = LogInit::log_init();
-  return iRet;
-}
