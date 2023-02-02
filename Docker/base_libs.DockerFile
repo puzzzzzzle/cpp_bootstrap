@@ -88,6 +88,7 @@ RUN  apt-get update && apt-get install -y  \
      python3-opencv \
      libfcgi-dev \
      libleveldb-dev \
+     pybind11-dev \
      && apt-get clean
 
 
