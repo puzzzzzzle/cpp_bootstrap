@@ -100,7 +100,7 @@ RUN  apt-get update && apt-get install -y  \
 #         && mkdir build \
 #         && cd build \
 #         && cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
-#         && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}' \
+#         && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
 #         && make install \
 #         && cd /tmp && rm -rf libgo
 
@@ -112,5 +112,14 @@ RUN  apt-get update && apt-get install -y  \
 #         && cp vcpkg /usr/bin \
 #         && cd /tmp && rm -rf vcpkg
 
-
+# build kcp
+RUN cd /tmp \
+    && git clone https://github.com/skywind3000/kcp.git \
+    && cd kcp \
+    && mkdir build \
+    && cd build \
+    && cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
+    && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
+    && make install \
+    && cd /tmp && rm -rf kcp
 ################## libs end
