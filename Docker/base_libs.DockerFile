@@ -92,6 +92,10 @@ RUN  apt-get update && apt-get install -y  \
      && apt-get clean
 
 
+RUN  apt-get update && apt-get install -y  \
+     iproute2 \
+     && apt-get clean
+
 # build libgo
 # not support c++20
 # RUN cd /tmp \
