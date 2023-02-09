@@ -12,9 +12,12 @@
 #pragma once
 
 #include <cerrno>
+#include <chrono>
 #include <cstdio>
+#include <iomanip>
 #include <iostream>
 
+#include "stl_to_steam.h"
 #ifdef STD_LOG_SYNC
 #include <atomic>
 #include <mutex>
@@ -39,11 +42,31 @@ enum class LogLevel : int {
 
 inline int log_init() { return 0; }
 // 格式化log时间
+template <class... Durations, class DurationIn>
+std::tuple<Durations...> break_down_durations(DurationIn d) {
+  std::tuple<Durations...> retval;
+  using discard = int[];
+  (void)discard{0, (void(((std::get<Durations>(retval) =
+                               std::chrono::duration_cast<Durations>(d)),
+                          (d -= std::chrono::duration_cast<DurationIn>(
+                               std::get<Durations>(retval))))),
+                    0)...};
+  return retval;
+}
 inline std::string log_now_time() {
-  time_t t = time(0);
-  char ch[64];
-  strftime(ch, sizeof(ch), "%Y-%m-%d %H:%M:%S", localtime(&t));
-  return ch;
+  std::ostringstream oss{};
+  auto now = std::chrono::system_clock::now();
+
+  auto in_time_t = std::chrono::system_clock::to_time_t(now);
+  oss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %H:%M:%S ");
+
+  const auto [s, ms, us, ns] =
+      break_down_durations<std::chrono::seconds, std::chrono::milliseconds,
+                           std::chrono::microseconds, std::chrono::nanoseconds>(
+          std::chrono::duration_cast<std::chrono::nanoseconds>(
+              now.time_since_epoch()));
+  oss << ms << ":" << us << ":" << ns;
+  return oss.str();
 }
 // log计数
 inline std::atomic_int& get_std_log_count() {
