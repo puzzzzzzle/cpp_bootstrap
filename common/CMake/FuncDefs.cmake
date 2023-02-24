@@ -1,32 +1,28 @@
 # 获取目录的子目录
-function(GetSubDirs Dir Result)
-    message("get dirs in  ${Dir}")
-    EXECUTE_PROCESS(
-            COMMAND python3 ${BOOTSTRAP_DIR}/common/CMake/travel_dir.py ${Dir} d
-            OUTPUT_VARIABLE DIRS
-    )
-    set(${Result} ${DIRS} PARENT_SCOPE)
-    message("All dirs ${DIRS}")
+function(GetSubCMakeDirs dir result)
+    file(GLOB_RECURSE cmake_files "${dir}/CMakeLists.txt")
+    foreach (cmake_file ${cmake_files})
+        get_filename_component(path ${cmake_file} DIRECTORY)
+        list(APPEND ${result} ${path})
+    endforeach()
+    set(${result} ${${result}} PARENT_SCOPE)
 endfunction()
 
 # 添加所有子目录到编译列表中
 function(AddAllSubDir)
     foreach (SRC_DIR_ROOT ${SRC_DIR_ROOTS})
-        message("add one dir ${SRC_DIR_ROOT}")
+        message("- ${SRC_DIR_ROOT}")
         include_directories(${SRC_DIR_ROOT})
-        GetSubDirs(${SRC_DIR_ROOT} SubDir)
-        message("SRC_DIR_ROOT: ${SRC_DIR_ROOT}")
+        set(SubDir "")
+        GetSubCMakeDirs(${SRC_DIR_ROOT} SubDir)
 
         foreach (dir ${SubDir})
-            if (NOT EXISTS "${dir}/CMakeLists.txt")
-                continue()
-            endif ()
             # 给个默认目标名字: 相对 CMAKE_SOURCE_DIR 路径
             string(REPLACE "${CMAKE_SOURCE_DIR}/" "" relative_dir ${dir})
             string(REGEX REPLACE "/" "_" build_temp ${relative_dir})
-
-            message("- ${build_temp}")
-            add_subdirectory(${dir})
+            set(build_abs_path ${dir})
+            message("  - ${build_temp}")
+            add_subdirectory(${build_abs_path})
         endforeach ()
     endforeach ()
 endfunction()
@@ -249,30 +245,35 @@ function(FindCommonLib)
 
     list(APPEND LIBS_LIST "pthread")
 
-    if (USE_CONAN)
-        # 加载conan
-        set(CONAN_EXEC "conan install ..  --build missing  ${CONAN_ARGS} " PARENT_SCOPE)
-        message("CONAN_EXEC at  ${CMAKE_CURRENT_SOURCE_DIR} : ${CONAN_EXEC}")
-        execute_process(
-                COMMAND conan install .. --build missing -s build_type=${CMAKE_BUILD_TYPE}
-                OUTPUT_VARIABLE _RES
-                ERROR_VARIABLE _RES
-        )
-        message("conan install end ${_RES}")
-        include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-        conan_basic_setup()
-        message("conan get libs\t${LIBS_LIST}\n")
-    else ()
-        find_package(GTest REQUIRED)
-        message("GTest find ${GTEST_INCLUDE_DIRS} ${GTEST_LIBRARIES}")
-        list(APPEND LIBS_LIST ${GTEST_LIBRARIES})
-        #        if (GCC_VERSION GREATER "7")
-        # 最新的gtest修复了这个问题， 不用再加这个选项了
-        # gtest needs to be set “_GLIBCXX_USE_CXX11_ABI=0” if gcc version greater than 7
-        #            message("gtest needs to be set “_GLIBCXX_USE_CXX11_ABI=0” if gcc version greater than 7")
-        #            add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-        #        endif ()
+#    if (USE_CONAN)
+#        # 加载conan
+#        set(CONAN_EXEC "conan install ..  --build missing  ${CONAN_ARGS} " PARENT_SCOPE)
+#        message("CONAN_EXEC at  ${CMAKE_CURRENT_SOURCE_DIR} : ${CONAN_EXEC}")
+#        execute_process(
+#                COMMAND conan install .. --build missing -s build_type=${CMAKE_BUILD_TYPE}
+#                OUTPUT_VARIABLE _RES
+#                ERROR_VARIABLE _RES
+#        )
+#        message("conan install end ${_RES}")
+#        include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+#        conan_basic_setup()
+#        message("conan get libs\t${LIBS_LIST}\n")
+#    else ()
+
+
+    find_package(GTest REQUIRED)
+    message("GTest find ${GTEST_INCLUDE_DIRS} ${GTEST_LIBRARIES}")
+    list(APPEND LIBS_LIST ${GTEST_LIBRARIES})
+
+    if (LOG_USE_BOOST)
+        add_definitions(-DLOG_BOOST)
+        list(APPEND CURR_BOOST log log_setup)
+        set(boost_libs "")
+        FindBoostLib(CURR_BOOST boost_libs)
+        message("++++++++ ${boost_libs}")
+        list(APPEND LIBS_LIST ${boost_libs})
     endif ()
+
     message("LIBS_LIST ${LIBS_LIST}")
     set(COMMON_LIBS ${LIBS_LIST} PARENT_SCOPE)
 
@@ -280,46 +281,30 @@ endfunction()
 
 # 查找boost
 function(FindInBoost components_list ret)
-    message("need boost components ${${components_list}}")
     set(BOOST_FIND_LIBS_ "")
     find_package(Boost COMPONENTS ${${components_list}} REQUIRED)
     if (Boost_FOUND)
         include_directories(${Boost_INCLUDE_DIRS})
-        message("boost find ${Boost_INCLUDE_DIRS} ${Boost_LIBRARIES}")
         list(APPEND BOOST_FIND_LIBS_ ${Boost_LIBRARIES})
     endif ()
     set(${ret} ${BOOST_FIND_LIBS_} PARENT_SCOPE)
 endfunction()
 
-function(FindBoostLib components_list)
+function(FindBoostLib components_list result)
     # boost log 需要的信息
     add_definitions(-DBOOST_LIB_DIAGNOSTIC)
     if (BOOST_USE_STATIC_LINK)
-        message("static link boost")
         set(Boost_USE_STATIC_LIBS ON)
     else ()
-        message("dyn link boost")
         #        add_definitions(-DBOOST_ALL_DYN_LINK)
     endif ()
-    if (LOG_USE_BOOST)
-        message("log use boost")
-        add_definitions(-DLOG_BOOST)
-        list(APPEND ${components_list} log log_setup)
-    endif ()
-
     if (NOT ${components_list})
-        message("no boost lib needs")
         return()
     endif ()
     # find libs
     set(BOOST_FIND_LIBS "")
     FindInBoost(${components_list} BOOST_FIND_LIBS)
-    message("FindBoostLib : after find boost ${BOOST_FIND_LIBS}")
-    set(LIBS_LIST ${COMMON_LIBS})
-    list(APPEND LIBS_LIST ${BOOST_FIND_LIBS})
-    set(COMMON_LIBS ${LIBS_LIST} PARENT_SCOPE)
-    message("after find boost ${COMMON_LIBS}")
-
+    set(${result} ${BOOST_FIND_LIBS} PARENT_SCOPE)
 endfunction()
 
 # 开启协程
