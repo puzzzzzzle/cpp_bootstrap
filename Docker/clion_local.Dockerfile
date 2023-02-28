@@ -7,7 +7,7 @@
 #   docker build -t puzzzzzzle/clion_local:0.1 -f clion_local.Dockerfile .
 FROM ubuntu:22.04
 
-# change to mirrors.aliyun.com
+# change to mirror
 # RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
 #     && sed -i "s/security.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list
 #change to sjtu
@@ -79,17 +79,6 @@ RUN  apt-get update && apt-get install -y  \
 RUN pip3 install \
     conan
 
-# build libs
-# build libunifex
-RUN cd /tmp \
-    && git clone https://github.com/facebookexperimental/libunifex.git \
-    && cd libunifex \
-    && cmake -G Ninja -H. -Bbuild -DCMAKE_CXX_STANDARD:STRING=20 -DCMAKE_INSTALL_PREFIX=/usr \
-    && cd build \
-    && ninja \
-    && ninja install \
-    && cd /tmp && rm -rf libunifex
-
 
 # libs
 RUN  apt-get update && apt-get install -y  \
@@ -100,12 +89,23 @@ RUN  apt-get update && apt-get install -y  \
      libfcgi-dev \
      libleveldb-dev \
      pybind11-dev \
-     && apt-get clean
-
-
-RUN  apt-get update && apt-get install -y  \
      iproute2 \
      && apt-get clean
+
+
+####  build libs
+
+
+# build libunifex
+RUN cd /tmp \
+    && git clone https://github.com/facebookexperimental/libunifex.git \
+    && cd libunifex \
+    && cmake -G Ninja -H. -Bbuild -DCMAKE_CXX_STANDARD:STRING=20 -DCMAKE_INSTALL_PREFIX=/usr \
+    && cd build \
+    && ninja \
+    && ninja install \
+    && cd /tmp && rm -rf libunifex
+
 
 # build libgo
 # not support c++20
@@ -123,21 +123,6 @@ RUN  apt-get update && apt-get install -y  \
 # RUN cd /tmp \
 #         && git clone https://github.com/Microsoft/vcpkg.git \
 #         && cd vcpkg \
-#         && ./bootstrap-vcpkg.sh -disableMetrics \
-#         && cp vcpkg /usr/bin \
-#         && cd /tmp && rm -rf vcpkg
-
-# build kcp
-RUN cd /tmp \
-    && git clone https://github.com/skywind3000/kcp.git \
-    && cd kcp \
-    && mkdir build \
-    && cd build \
-    && cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
-    && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
-    && make install \
-    && cd /tmp && rm -rf kcp
-################## libs endcd vcpkg \
 #         && ./bootstrap-vcpkg.sh -disableMetrics \
 #         && cp vcpkg /usr/bin \
 #         && cd /tmp && rm -rf vcpkg
