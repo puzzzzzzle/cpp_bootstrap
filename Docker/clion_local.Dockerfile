@@ -8,18 +8,10 @@
 FROM ubuntu:22.04
 
 # change to mirrors.aliyun.com
-RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
-    && sed -i "s/security.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list
-
-# RUN sed -i "s@http://.*archive.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list \
-#  && sed -i "s@http://.*security.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
-# install libs
-
-RUN DEBIAN_FRONTEND="noninteractive" apt-get update && apt-get -y install tzdata
-
-# change to mirrors.aliyun.com
-RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
-    && sed -i "s/security.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list
+# RUN sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list \
+#     && sed -i "s/security.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list
+#change to sjtu
+RUN sed -i 's/archive.ubuntu.com/mirror.sjtu.edu.cn/g' /etc/apt/sources.list
 
 # RUN sed -i "s@http://.*archive.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list \
 #  && sed -i "s@http://.*security.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
@@ -131,6 +123,21 @@ RUN  apt-get update && apt-get install -y  \
 # RUN cd /tmp \
 #         && git clone https://github.com/Microsoft/vcpkg.git \
 #         && cd vcpkg \
+#         && ./bootstrap-vcpkg.sh -disableMetrics \
+#         && cp vcpkg /usr/bin \
+#         && cd /tmp && rm -rf vcpkg
+
+# build kcp
+RUN cd /tmp \
+    && git clone https://github.com/skywind3000/kcp.git \
+    && cd kcp \
+    && mkdir build \
+    && cd build \
+    && cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
+    && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
+    && make install \
+    && cd /tmp && rm -rf kcp
+################## libs endcd vcpkg \
 #         && ./bootstrap-vcpkg.sh -disableMetrics \
 #         && cp vcpkg /usr/bin \
 #         && cd /tmp && rm -rf vcpkg
