@@ -10,35 +10,17 @@
  ************************************************/
 
 #pragma once
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/log/attributes.hpp>
-#include <boost/log/common.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/sinks.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/sources/channel_feature.hpp>
-#include <boost/log/sources/channel_logger.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/record_ostream.hpp>
 #include <boost/log/sources/severity_channel_logger.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/support/date_time.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/from_stream.hpp>
-#include <boost/log/utility/setup/settings.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include <fstream>
+#include <sstream>
 #include <string>
+#include <thread>
 
 namespace logging = boost::log;
 namespace src = boost::log::sources;
-namespace expr = boost::log::expressions;
-namespace keywords = boost::log::keywords;
-namespace attrs = boost::log::attributes;
-namespace sinks = boost::log::sinks;
 namespace trivial = logging::trivial;
 using LogChannal =
     src::severity_channel_logger<trivial::severity_level, std::string>;
@@ -53,14 +35,7 @@ inline LogChannal& GetLogger() {
  * @return
  */
 inline int log_init() {
-  logging::add_common_attributes();
-  logging::core::get()->add_thread_attribute("Scope", attrs::named_scope());
-
-  logging::register_simple_formatter_factory<trivial::severity_level, char>(
-      "Severity");
-  logging::register_simple_filter_factory<trivial::severity_level, char>(
-      "Severity");
-
+  boost::log::add_common_attributes();
   std::ifstream file("./data/boost_log_settings.ini");
   if (!file.is_open()) {
     std::cerr << "open settings fail" << std::endl;

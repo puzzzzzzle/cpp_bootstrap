@@ -1,135 +1,52 @@
+# 打印编译选项
+function(PrintCxxFlag)
+    message("CMAKE_CXX_FLAGS flags:${CMAKE_CXX_FLAGS}")
+    message("CMAKE_C_FLAGS flags:${CMAKE_C_FLAGS}")
+endfunction()
+
+# 打印所有变量
+function(PrintAllVars)
+    get_cmake_property(_variableNames VARIABLES)
+    foreach (_variableName ${_variableNames})
+        message(STATUS "${_variableName}=${${_variableName}}")
+    endforeach ()
+endfunction()
+
+
 # 获取目录的子目录
-function(GetSubDirs Dir Result)
-    message("get dirs in  ${Dir}")
-    EXECUTE_PROCESS(
-            COMMAND python3 ${BOOTSTRAP_DIR}/common/CMake/travel_dir.py ${Dir} d
-            OUTPUT_VARIABLE DIRS
-    )
-    set(${Result} ${DIRS} PARENT_SCOPE)
-    message("All dirs ${DIRS}")
+function(GetSubCMakeDirs DIR RESULT)
+    file(GLOB_RECURSE cmake_files "${DIR}/CMakeLists.txt")
+    foreach (cmake_file ${cmake_files})
+        get_filename_component(path ${cmake_file} DIRECTORY)
+        list(APPEND ${RESULT} ${path})
+    endforeach()
+    set(${RESULT} ${${RESULT}} PARENT_SCOPE)
 endfunction()
 
 # 添加所有子目录到编译列表中
 function(AddAllSubDir)
     foreach (SRC_DIR_ROOT ${SRC_DIR_ROOTS})
-        message("add one dir ${SRC_DIR_ROOT}")
+        message("- ${SRC_DIR_ROOT}")
         include_directories(${SRC_DIR_ROOT})
-        GetSubDirs(${SRC_DIR_ROOT} SubDir)
-        message("SRC_DIR_ROOT: ${SRC_DIR_ROOT}")
+        set(SUB_DIRS "")
+        GetSubCMakeDirs(${SRC_DIR_ROOT} SUB_DIRS)
 
-        foreach (dir ${SubDir})
-            if (NOT EXISTS "${dir}/CMakeLists.txt")
-                continue()
-            endif ()
+        foreach (DIR ${SUB_DIRS})
             # 给个默认目标名字: 相对 CMAKE_SOURCE_DIR 路径
-            string(REPLACE "${CMAKE_SOURCE_DIR}/" "" relative_dir ${dir})
-            string(REGEX REPLACE "/" "_" build_temp ${relative_dir})
-
-            message("- ${build_temp}")
-            add_subdirectory(${dir})
+            string(REPLACE "${CMAKE_SOURCE_DIR}/" "" RELATIVE_DIR ${DIR})
+            string(REGEX REPLACE "/" "_" CURRENT_TASK ${RELATIVE_DIR})
+            set(BUILD_ABS_PATH ${DIR})
+            message("  - ${CURRENT_TASK}")
+            add_subdirectory(${BUILD_ABS_PATH})
         endforeach ()
     endforeach ()
 endfunction()
 
+# 设置二进制输出目录
 function(SetBinDir Dir)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${Dir} PARENT_SCOPE)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${Dir} PARENT_SCOPE)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${Dir} PARENT_SCOPE)
-endfunction()
-
-# 下载文件 和 hash
-function(download_file_with_hash url filename hash_type hash)
-    message(STATUS "Download to ${filename} ...")
-    file(DOWNLOAD ${url} ${filename} EXPECTED_HASH ${hash_type}=${hash})
-endfunction()
-
-# 解压缩文件
-function(extract_file filename extract_dir)
-    message(STATUS "Extract to ${extract_dir} ...")
-
-    # 创建临时目录，用来解压，如果已经存在，则删除
-    # 这里用的解压命令，是 cmake 内部实现的解压命令，可以实现跨平台解压：
-    # cmake -E tar -xf filename.tgz
-    set(temp_dir ${CMAKE_BINARY_DIR}/tmp_for_extract.dir)
-    if (EXISTS ${temp_dir})
-        file(REMOVE_RECURSE ${temp_dir})
-    endif ()
-    file(MAKE_DIRECTORY ${temp_dir})
-    execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar -xf ${filename}
-            WORKING_DIRECTORY ${temp_dir}
-    )
-
-    # 这里比较关键，解压之后的临时目录中，可能是单个文件夹，里面包含着我们需要的内容，
-    # 也可能是直接就包含着我们需要的内容，因此，这里就统一处理，如果包含单独的文件夹
-    # 则将安装源目录设置为临时目录的下级目录
-    file(GLOB contents "${temp_dir}/*")
-    list(LENGTH contents n)
-    if (NOT n EQUAL 1 OR NOT IS_DIRECTORY "${contents}")
-        set(contents "${temp_dir}")
-    endif ()
-
-    get_filename_component(contents ${contents} ABSOLUTE)
-    # 这里选择 INSTALL 而不是 COPY，因为可以打印出文件拷贝的状态
-    file(INSTALL "${contents}/" DESTINATION ${extract_dir})
-
-    # 别忘删除临时目录
-    file(REMOVE_RECURSE ${temp_dir})
-endfunction()
-
-# 下载并解压缩
-function(download_and_extract)
-    set(options REMOVE_EXTRACT_DIR_IF_EXISTS)
-    set(oneValueArgs DESTINATION RENAME)
-    set(multiValueArgs)
-    set(oneValueArgs URL FILENAME HASH_TYPE HASH EXTRACT_DIR)
-    cmake_parse_arguments(DAE "${options}" "${oneValueArgs}" "${multiValueArgs}"
-            ${ARGN})
-    if (NOT DEFINED DAE_URL)
-        message(FATAL_ERROR "Missing URL")
-    endif ()
-    if (NOT DEFINED DAE_FILENAME)
-        message(FATAL_ERROR "Missing FILENAME")
-    endif ()
-    if (NOT DEFINED DAE_HASH_TYPE)
-        message(FATAL_ERROR "Missing HASH_TYPE")
-    endif ()
-    if (NOT DEFINED DAE_HASH)
-        message(FATAL_ERROR "Missing HASH")
-    endif ()
-    if (NOT DEFINED DAE_EXTRACT_DIR)
-        message(FATAL_ERROR "Missing EXTRACT_DIR")
-    endif ()
-
-    if (EXISTS ${DAE_EXTRACT_DIR})
-        if (DAE_REMOVE_EXTRACT_DIR_IF_EXISTS)
-            message(STATUS "${DAE_EXTRACT_DIR} already exists, removing...")
-            file(REMOVE_RECURSE ${DAE_EXTRACT_DIR})
-        else ()
-            message(
-                    STATUS "${DAE_EXTRACT_DIR} already exists, skip download & extract")
-            return()
-        endif ()
-    endif ()
-
-    if (EXISTS ${DAE_FILENAME})
-        file(${DAE_HASH_TYPE} ${DAE_FILENAME} _ACTUAL_CHKSUM)
-
-        if (NOT (${_EXPECT_HASH} STREQUAL ${_ACTUAL_CHKSUM}))
-            message(STATUS "Expect ${DAE_HASH_TYPE}=${_EXPECT_HASH}")
-            message(STATUS "Actual ${DAE_HASH_TYPE}=${_ACTUAL_CHKSUM}")
-            message(WARNING "File hash mismatch, remove & retry ...")
-            file(REMOVE ${DAE_FILENAME})
-            download_file_with_hash(${DAE_URL} ${DAE_FILENAME} ${DAE_HASH_TYPE}
-                    ${_EXPECT_HASH})
-        else ()
-            message(STATUS "Using exists local file ${DAE_FILENAME}")
-        endif ()
-    else ()
-        download_file_with_hash(${DAE_URL} ${DAE_FILENAME} ${DAE_HASH_TYPE}
-                ${_EXPECT_HASH})
-    endif ()
-    extract_file(${DAE_FILENAME} ${DAE_EXTRACT_DIR})
 endfunction()
 
 # 开启 asm 支持
@@ -185,20 +102,6 @@ function(SetCommonBuildFlag)
     endif ()
 endfunction()
 
-# 打印编译选项
-function(PrintCxxFlag)
-    message("CMAKE_CXX_FLAGS flags:${CMAKE_CXX_FLAGS}")
-    message("CMAKE_C_FLAGS flags:${CMAKE_C_FLAGS}")
-endfunction()
-
-# 打印所有变量
-function(PrintAllVars)
-    get_cmake_property(_variableNames VARIABLES)
-    foreach (_variableName ${_variableNames})
-        message(STATUS "${_variableName}=${${_variableName}}")
-    endforeach ()
-endfunction()
-
 #配置版本号的映射文件，方便代码中使用
 function(GenConfig)
     configure_file(
@@ -249,77 +152,44 @@ function(FindCommonLib)
 
     list(APPEND LIBS_LIST "pthread")
 
-    if (USE_CONAN)
-        # 加载conan
-        set(CONAN_EXEC "conan install ..  --build missing  ${CONAN_ARGS} " PARENT_SCOPE)
-        message("CONAN_EXEC at  ${CMAKE_CURRENT_SOURCE_DIR} : ${CONAN_EXEC}")
-        execute_process(
-                COMMAND conan install .. --build missing -s build_type=${CMAKE_BUILD_TYPE}
-                OUTPUT_VARIABLE _RES
-                ERROR_VARIABLE _RES
-        )
-        message("conan install end ${_RES}")
-        include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-        conan_basic_setup()
-        message("conan get libs\t${LIBS_LIST}\n")
-    else ()
-        find_package(GTest REQUIRED)
-        message("GTest find ${GTEST_INCLUDE_DIRS} ${GTEST_LIBRARIES}")
-        list(APPEND LIBS_LIST ${GTEST_LIBRARIES})
-        #        if (GCC_VERSION GREATER "7")
-        # 最新的gtest修复了这个问题， 不用再加这个选项了
-        # gtest needs to be set “_GLIBCXX_USE_CXX11_ABI=0” if gcc version greater than 7
-        #            message("gtest needs to be set “_GLIBCXX_USE_CXX11_ABI=0” if gcc version greater than 7")
-        #            add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-        #        endif ()
+
+    find_package(GTest REQUIRED)
+    message("GTest find ${GTEST_INCLUDE_DIRS} ${GTEST_LIBRARIES}")
+    list(APPEND LIBS_LIST ${GTEST_LIBRARIES})
+
+    if (LOG_USE_BOOST)
+        add_definitions(-DLOG_BOOST)
+        list(APPEND CURR_BOOST log log_setup)
+        set(BOOST_LIBS "")
+        FindBoostLib(CURR_BOOST BOOST_LIBS)
+        list(APPEND LIBS_LIST ${BOOST_LIBS})
     endif ()
+
     message("LIBS_LIST ${LIBS_LIST}")
     set(COMMON_LIBS ${LIBS_LIST} PARENT_SCOPE)
 
 endfunction()
 
 # 查找boost
-function(FindInBoost components_list ret)
-    message("need boost components ${${components_list}}")
-    set(BOOST_FIND_LIBS_ "")
-    find_package(Boost COMPONENTS ${${components_list}} REQUIRED)
-    if (Boost_FOUND)
-        include_directories(${Boost_INCLUDE_DIRS})
-        message("boost find ${Boost_INCLUDE_DIRS} ${Boost_LIBRARIES}")
-        list(APPEND BOOST_FIND_LIBS_ ${Boost_LIBRARIES})
-    endif ()
-    set(${ret} ${BOOST_FIND_LIBS_} PARENT_SCOPE)
-endfunction()
-
-function(FindBoostLib components_list)
+function(FindBoostLib COMPONENTS_LIST RESULT)
     # boost log 需要的信息
     add_definitions(-DBOOST_LIB_DIAGNOSTIC)
     if (BOOST_USE_STATIC_LINK)
-        message("static link boost")
         set(Boost_USE_STATIC_LIBS ON)
     else ()
-        message("dyn link boost")
         #        add_definitions(-DBOOST_ALL_DYN_LINK)
     endif ()
-    if (LOG_USE_BOOST)
-        message("log use boost")
-        add_definitions(-DLOG_BOOST)
-        list(APPEND ${components_list} log log_setup)
-    endif ()
-
-    if (NOT ${components_list})
-        message("no boost lib needs")
+    if (NOT ${COMPONENTS_LIST})
         return()
     endif ()
     # find libs
     set(BOOST_FIND_LIBS "")
-    FindInBoost(${components_list} BOOST_FIND_LIBS)
-    message("FindBoostLib : after find boost ${BOOST_FIND_LIBS}")
-    set(LIBS_LIST ${COMMON_LIBS})
-    list(APPEND LIBS_LIST ${BOOST_FIND_LIBS})
-    set(COMMON_LIBS ${LIBS_LIST} PARENT_SCOPE)
-    message("after find boost ${COMMON_LIBS}")
-
+    find_package(Boost COMPONENTS ${${COMPONENTS_LIST}} REQUIRED)
+    if (Boost_FOUND)
+        include_directories(${Boost_INCLUDE_DIRS})
+        list(APPEND BOOST_FIND_LIBS ${Boost_LIBRARIES})
+    endif ()
+    set(${RESULT} ${BOOST_FIND_LIBS} PARENT_SCOPE)
 endfunction()
 
 # 开启协程
