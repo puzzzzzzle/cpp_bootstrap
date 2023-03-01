@@ -84,6 +84,7 @@ RUN  apt-get update && apt-get install -y  \
      libprotobuf-dev \
      protobuf-compiler \
      capnproto \
+     libcapnp-dev \
      flatbuffers-compiler \
      libflatbuffers-dev \
      && apt-get clean
