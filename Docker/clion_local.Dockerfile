@@ -90,6 +90,12 @@ RUN  apt-get update && apt-get install -y  \
      libleveldb-dev \
      pybind11-dev \
      iproute2 \
+     libprotobuf-dev \
+     protobuf-compiler \
+     capnproto \
+     libcapnp-dev \
+     flatbuffers-compiler \
+     libflatbuffers-dev \
      && apt-get clean
 
 
