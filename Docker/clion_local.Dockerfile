@@ -85,12 +85,12 @@ RUN pip3 install \
 # libs
 RUN  apt-get update && apt-get install -y  \
      pybind11-dev \
+     python3-dev \
      rapidjson-dev \
      libopencv-dev \
      python3-opencv \
      libfcgi-dev \
      libleveldb-dev \
-     pybind11-dev \
      iproute2 \
      libprotobuf-dev \
      protobuf-compiler \
