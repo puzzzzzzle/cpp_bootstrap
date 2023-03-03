@@ -96,6 +96,7 @@ RUN pip3 install \
 
 # libs
 RUN  apt-get update && apt-get install -y  \
+     python3-dev \
      pybind11-dev \
      rapidjson-dev \
      libopencv-dev \
