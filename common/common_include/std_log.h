@@ -16,10 +16,10 @@
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
+#include <atomic>
 
 #include "stl_to_steam.h"
 #ifdef STD_LOG_SYNC
-#include <atomic>
 #include <mutex>
 namespace LogInit {
 // log 同步锁
@@ -94,6 +94,7 @@ inline void set_log_level(LogLevel level) { log_level() = level; }
 #else
 #define LOG_SYNC_LOCK()
 #endif
+
 // log 等级定义
 #define STD_LOG_DEF(stream, level, msg)                                 \
   if ((int)::LogInit::LogLevel::level >= (int)::LogInit::log_level()) { \
