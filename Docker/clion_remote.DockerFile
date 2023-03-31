@@ -8,7 +8,7 @@
 #       export COMPOSE_DOCKER_CLI_BUILD=1
 
 #   docker build -t puzzzzzzle/clion_remote:0.6.1 -f clion_remote.DockerFile .
-#   docker run -d --cap-add sys_ptrace -p 30022:22 --name cb puzzzzzzle/clion_remote:0.6.1
+#    docker run -d --cap-add sys_ptrace -v /data:/host_data -p 30022:22 --name cb puzzzzzzle/clion_remote:0.6.1
 #
 # stop:
 #   docker stop clion_remote_env
