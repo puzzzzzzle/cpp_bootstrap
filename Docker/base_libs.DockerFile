@@ -141,15 +141,4 @@ RUN cd /tmp \
     && make install \
     && cd /tmp && rm -rf kcp
 
-# build lua brage
-RUN cd /tmp \
-    && git clone https://github.com/vinniefalco/LuaBridge.git \
-    && cd LuaBridge \
-    && mkdir build \
-    && cd build \
-    && cmake .. -DLUABRIDGE_TESTING=OFF -DCMAKE_INSTALL_PREFIX=/usr \
-    && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
-    && make install \
-    && cd /tmp && rm -rf LuaBridge
-
 ################## libs end
