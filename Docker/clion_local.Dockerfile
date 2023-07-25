@@ -75,6 +75,7 @@ RUN  apt-get update && apt-get install -y  \
      zip \
      unzip \
      vim \
+     lrzsz \
      && apt-get clean
 
 # python libs
@@ -114,8 +115,7 @@ RUN  apt-get update && apt-get install -y  \
 RUN cd /tmp \
     && git clone https://github.com/facebookexperimental/libunifex.git \
     && cd libunifex \
-    # && git checkout v0.2.0 \
-    && cmake -G Ninja -H. -Bbuild -DBUILD_TESTING=off -DCMAKE_CXX_STANDARD:STRING=20 -DCMAKE_INSTALL_PREFIX=/usr \
+    && cmake -G Ninja -H. -Bbuild -DCMAKE_CXX_STANDARD:STRING=20 -DCMAKE_INSTALL_PREFIX=/usr \
     && cd build \
     && ninja \
     && ninja install \
@@ -152,16 +152,5 @@ RUN cd /tmp \
     && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
     && make install \
     && cd /tmp && rm -rf kcp
-
-# build lua brage
-RUN cd /tmp \
-    && git clone https://github.com/vinniefalco/LuaBridge.git \
-    && cd LuaBridge \
-    && mkdir build \
-    && cd build \
-    && cmake .. -DLUABRIDGE_TESTING=OFF -DCMAKE_INSTALL_PREFIX=/usr \
-    && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
-    && make install \
-    && cd /tmp && rm -rf LuaBridge
 
 ################## libs end
