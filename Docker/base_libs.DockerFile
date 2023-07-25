@@ -64,6 +64,7 @@ RUN  apt-get update && apt-get install -y  \
      zip \
      unzip \
      vim \
+     lrzsz \
      && apt-get clean
 
 # python libs
