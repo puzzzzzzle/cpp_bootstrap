@@ -114,7 +114,8 @@ RUN  apt-get update && apt-get install -y  \
 RUN cd /tmp \
     && git clone https://github.com/facebookexperimental/libunifex.git \
     && cd libunifex \
-    && cmake -G Ninja -H. -Bbuild -DCMAKE_CXX_STANDARD:STRING=20 -DCMAKE_INSTALL_PREFIX=/usr \
+    # && git checkout v0.2.0 \
+    && cmake -G Ninja -H. -Bbuild -DBUILD_TESTING=off -DCMAKE_CXX_STANDARD:STRING=20 -DCMAKE_INSTALL_PREFIX=/usr \
     && cd build \
     && ninja \
     && ninja install \
