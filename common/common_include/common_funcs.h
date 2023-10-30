@@ -176,3 +176,21 @@ inline const char* FindParaEx(int argc, char** argv, const char* pre,
   }
   return &cStr[strlen(pre)];
 }
+/**
+ * string 切分
+ * @param s
+ * @param delimiter
+ * @return
+ */
+inline std::vector<std::string> Split(std::string s,
+                                      const std::string& delimiter) {
+  std::vector<std::string> result{};
+  size_t pos{0};
+  while ((pos = s.find(delimiter)) != std::string::npos) {
+    std::string token = s.substr(0, pos);
+    result.push_back(token);
+    s.erase(0, pos + delimiter.length());
+  }
+  result.push_back(s);
+  return result;
+}
