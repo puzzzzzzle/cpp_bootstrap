@@ -67,11 +67,6 @@ RUN  apt-get update && apt-get install -y  \
      lrzsz \
      && apt-get clean
 
-# python libs
-RUN pip3 install \
-    conan
-
-
 # libs
 RUN  apt-get update && apt-get install -y  \
      python3-dev \
@@ -81,23 +76,8 @@ RUN  apt-get update && apt-get install -y  \
      libopencv-dev \
      python3-opencv \
      libfcgi-dev \
-     libleveldb-dev \
      iproute2 \
-     libprotobuf-dev \
-     protobuf-compiler \
-     capnproto \
-     libcapnp-dev \
-     flatbuffers-compiler \
-     libflatbuffers-dev \
-     lua5.4 \
-     liblua5.4-0 \
-     liblua5.4-0-dbg \
-     liblua5.4-dev \
-     luarocks \
      && apt-get clean
-
-
-####  build libs
 
 
 # build libunifex
@@ -110,27 +90,6 @@ RUN cd /tmp \
     && ninja install \
     && cd /tmp && rm -rf libunifex
 
-
-# build libgo
-# not support c++20
-# RUN cd /tmp \
-#         && git clone https://github.com/yyzybb537/libgo.git \
-#         && cd libgo \
-#         && mkdir build \
-#         && cd build \
-#         && cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
-#         && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
-#         && make install \
-#         && cd /tmp && rm -rf libgo
-
-# build vcpkg
-# RUN cd /tmp \
-#         && git clone https://github.com/Microsoft/vcpkg.git \
-#         && cd vcpkg \
-#         && ./bootstrap-vcpkg.sh -disableMetrics \
-#         && cp vcpkg /usr/bin \
-#         && cd /tmp && rm -rf vcpkg
-
 # build kcp
 RUN cd /tmp \
     && git clone https://github.com/skywind3000/kcp.git \
@@ -141,5 +100,26 @@ RUN cd /tmp \
     && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
     && make install \
     && cd /tmp && rm -rf kcp
+
+# libs
+
+RUN apt-get update && apt-get install -y  \
+    lua5.4 \
+    liblua5.4-0 \
+    liblua5.4-0-dbg \
+    liblua5.4-dev \
+    luarocks \
+    && apt-get clean
+
+RUN apt-get update && apt-get install -y  \
+    librocksdb-dev  \
+    libleveldb-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    capnproto \
+    libcapnp-dev \
+    flatbuffers-compiler \
+    libflatbuffers-dev \
+    && apt-get clean
 
 ################## libs end
