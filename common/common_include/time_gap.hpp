@@ -14,6 +14,7 @@
 #include <ctime>
 #include <iostream>
 #include <cmath>
+#include <opencv4/opencv2/core/hal/interface.h>
 #define MICRO_NANO (1000)
 #define SEC_MICRO (MICRO_NANO * 1000)
 #define SEC_NANO (SEC_MICRO * 1000)
@@ -93,12 +94,12 @@ class TimeGap {
    * 获取和开始时间相差
    * @return 秒
    */
-  inline int64_t gapSec() { return std::round((double)gap() / 1000000); }
+  inline int64_t gapSec() { return gap() / 1000000; }
   /**
    * 获取和开始时间相差
    * @return 毫秒
    */
-  inline int64_t gapMs() { return std::round((double)gap() / 1000); }
+  inline int64_t gapMs() { return gap() / 1000; }
   /**
    * 获取和开始时间相差
    * @return 微秒
@@ -106,14 +107,31 @@ class TimeGap {
   inline int64_t gapUs() { return gap(); }
 
   inline int resetStart(const timeval &_start) {
+    clearCacheTime();
     start = _start;
     return 0;
   }
 
-  inline int resetStartNow() { return gettimeofday(&start, nullptr); }
-
+  inline int resetStartNow() {
+    clearCacheTime();
+    return gettimeofday(&start, nullptr);
+  }
+public:
+  inline int64_t gapCacheMs() {
+    return cache_time_us/ 1000;
+  }
+  inline int64_t gapCacheUs() {
+    return cache_time_us;
+  }
+  inline void cacheTime() {
+    cache_time_us = gapUs();
+  }
+  inline void clearCacheTime() {
+    cache_time_us = 0;
+  }
   private:
   timeval start{};
+  int64_t cache_time_us{};
 };
 
 class TimeTools {
