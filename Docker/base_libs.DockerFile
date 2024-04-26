@@ -51,6 +51,8 @@ RUN  apt-get install -y  \
 #     cpio \
 #     && apt-get clean
 
+# rust
+RUN  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta
 
 # tools
 RUN  apt-get update && apt-get install -y  \
