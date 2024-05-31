@@ -20,19 +20,35 @@ FROM ubuntu:22.04
 
 INCLUDE+ base_libs.DockerFile
 
-
-RUN ( \
-    echo 'LogLevel DEBUG2'; \
-    echo 'PermitRootLogin yes'; \
-    echo 'PasswordAuthentication yes'; \
-    echo 'Subsystem sftp /usr/lib/openssh/sftp-server'; \
-  ) > /etc/ssh/sshd_config_test_clion \
-  && mkdir /run/sshd
-
-RUN useradd -m user \
+# config sshd
+RUN <<EOT
+set -e
+# user
+useradd -m user \
   && yes password | passwd user \
   && usermod -s /bin/bash user
 
-EXPOSE 22
+# sshd
+mkdir -p /var/run/sshd
+ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key
 
-CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]
+# ssh config
+echo >> /etc/ssh/sshd_config <<EOL
+PermitRootLogin yes
+LogLevel DEBUG2
+PermitRootLogin yes
+PasswordAuthentication yes
+Subsystem sftp /usr/lib/openssh/sftp-server
+EOL
+
+# pam
+sed -i 's/.*session.*required.*pam_loginuid.so.*/session optional pam_loginuid.so/g' /etc/pam.d/sshd
+
+# lang
+/bin/echo -e "LANG=\"en_US.UTF-8\"" > /etc/default/local
+
+EOT
+
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
