@@ -22,6 +22,7 @@ INCLUDE+ base_libs.DockerFile
 
 # config sshd
 RUN <<EOT
+
 set -e
 # user
 useradd -m user \
