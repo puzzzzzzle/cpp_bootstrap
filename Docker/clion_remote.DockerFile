@@ -22,7 +22,6 @@ INCLUDE+ base_libs.DockerFile
 
 # config sshd
 RUN <<EOT
-
 set -e
 # user
 useradd -m user \
@@ -48,7 +47,6 @@ sed -i 's/.*session.*required.*pam_loginuid.so.*/session optional pam_loginuid.s
 
 # lang
 /bin/echo -e "LANG=\"en_US.UTF-8\"" > /etc/default/local
-
 EOT
 
 EXPOSE 22
