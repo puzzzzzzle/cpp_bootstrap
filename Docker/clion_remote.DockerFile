@@ -1,5 +1,3 @@
-# syntax = edrevo/dockerfile-plus
-
 # CLion remote docker environment (How to build docker container, run and stop it)
 #
 # Build and run:
@@ -7,8 +5,8 @@
 #       export DOCKER_BUILDKIT=1
 #       export COMPOSE_DOCKER_CLI_BUILD=1
 
-#   docker build -t puzzzzzzle/clion_remote:0.6.1 -f clion_remote.DockerFile .
-#    docker run -d --cap-add sys_ptrace -v /data:/host_data -p 30022:22 --name cb puzzzzzzle/clion_remote:0.6.1
+#   docker build -t clion_remote:0.1 -f clion_remote.DockerFile .
+#    docker run -d --cap-add sys_ptrace -v /data:/host_data -p 30022:22 --name cb clion_remote:0.1
 #
 # stop:
 #   docker stop clion_remote_env
@@ -16,9 +14,8 @@
 # ssh credentials (test user):
 #   user@password
 
-FROM ubuntu:22.04
+FROM clion_local:0.1
 
-INCLUDE+ base_libs.DockerFile
 
 # config sshd
 RUN <<EOT
