@@ -36,7 +36,6 @@ RUN mkdir -p /var/run/sshd /etc/ssh && \
 RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
     echo "LogLevel DEBUG2" >> /etc/ssh/sshd_config && \
     echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config && \
-    echo "Subsystem sftp /usr/lib/openssh/sftp-server" >> /etc/ssh/sshd_config && \
     sed -i 's/.*session.*required.*pam_loginuid.so.*/session optional pam_loginuid.so/g' /etc/pam.d/sshd && \
     echo 'LANG="en_US.UTF-8"' > /etc/default/locale
 
