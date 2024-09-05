@@ -1,7 +1,7 @@
 # CLion remote docker environment (How to build docker container, run and stop it)
 #
 # Build and run:
-# environment variable neededsï¼š
+# environment variable neededsï¼?
 #       export DOCKER_BUILDKIT=1
 #       export COMPOSE_DOCKER_CLI_BUILD=1
 
@@ -16,33 +16,32 @@
 
 FROM clion_local:0.1
 
+# ÉèÖÃ»·¾³±äÁ¿£¬±ÜÃâ½»»¥Ê½ÌáÊ¾
+ENV DEBIAN_FRONTEND=noninteractive
 
-# config sshd
-FROM ubuntu:20.04
-
+# ´´½¨ÓÃ»§²¢ÉèÖÃÃÜÂë
 RUN set -e && \
-    # user
     useradd -m user && \
-    yes password | passwd user && \
-    usermod -s /bin/bash user && \
-    \
-    # sshd
-    mkdir -p /var/run/sshd && \
-    ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key && \
-    ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key && \
-    \
-    # ssh config
-    echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
+    echo "user:password" | chpasswd && \
+    usermod -s /bin/bash user
+
+# ´´½¨±ØÒªµÄÄ¿Â¼²¢Éú³É SSH Ö÷»úÃÜÔ¿
+RUN mkdir -p /var/run/sshd /etc/ssh && \
+    chmod 0700 /etc/ssh && \
+    [ ! -f /etc/ssh/ssh_host_rsa_key ] && ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N "" || true && \
+    [ ! -f /etc/ssh/ssh_host_dsa_key ] && ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -N "" || true && \
+    chmod 0600 /etc/ssh/ssh_host_rsa_key /etc/ssh/ssh_host_dsa_key
+
+# ÅäÖÃ SSH
+RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
     echo "LogLevel DEBUG2" >> /etc/ssh/sshd_config && \
-    echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
     echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config && \
     echo "Subsystem sftp /usr/lib/openssh/sftp-server" >> /etc/ssh/sshd_config && \
-    \
-    # pam
     sed -i 's/.*session.*required.*pam_loginuid.so.*/session optional pam_loginuid.so/g' /etc/pam.d/sshd && \
-    \
-    # lang
-    /bin/echo -e "LANG=\"en_US.UTF-8\"" > /etc/default/locale
+    echo 'LANG="en_US.UTF-8"' > /etc/default/locale
 
+# ±©Â¶ SSH ¶Ë¿Ú
 EXPOSE 22
+
+# Æô¶¯ SSH ·þÎñ
 CMD ["/usr/sbin/sshd", "-D"]
