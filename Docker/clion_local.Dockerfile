@@ -3,7 +3,7 @@
 #       export DOCKER_BUILDKIT=1
 #       export COMPOSE_DOCKER_CLI_BUILD=1
 #   docker build -t clion_local:0.1 -f clion_local.Dockerfile .
-#   docker run -it --name cb -v /home/tao:/home/tao clion_local:0.1 /bin/bash
+#   docker run -it --name cb clion_local:0.1 /bin/bash
 #   docker start -ia cb
 FROM ubuntu:22.04
 
