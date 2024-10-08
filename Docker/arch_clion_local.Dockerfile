@@ -42,6 +42,7 @@ RUN pacman -Syyu --noconfirm \
     unzip \
     vim \
     lrzsz \
+    less \
     \
     python \
     python-pip \
@@ -63,13 +64,13 @@ RUN pacman -Syyu --noconfirm \
 # 安装 Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta
 
-# 安装 libunifex
+# 安装 libunifex, 当前版本多线程编译有问题
 RUN cd /tmp \
     && git clone https://github.com/facebookexperimental/libunifex.git \
     && cd libunifex \
-    && cmake -G Ninja -H. -Bbuild -DCMAKE_CXX_STANDARD:STRING=20 -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=OFF -DUNIFEX_BUILD_EXAMPLES=OFF \
+    && cmake -G Ninja -H. -Bbuild -DCMAKE_CXX_STANDARD:STRING=23 -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=OFF -DUNIFEX_BUILD_EXAMPLES=OFF \
     && cd build \
-    && ninja \
+    && ninja -j 1 \
     && ninja install \
     && cd /tmp && rm -rf libunifex
 
