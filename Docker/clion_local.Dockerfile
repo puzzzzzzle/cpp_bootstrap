@@ -44,28 +44,11 @@ RUN  apt-get install -y  \
      libboost-all-dev \
      && apt-get clean
 
-
-# linux kernel build needs
-# for build speed, only install qemu-system-x86_64
-#RUN  apt-get update && apt-get install -y  \
-#     qemu-system-x86 \
-#     fakeroot \
-#     ncurses-dev \
-#     xz-utils \
-#     libssl-dev \
-#     bc \
-#     flex \
-#     libelf-dev \
-#     bison \
-#     cpio \
-#     && apt-get clean
-
 # rust
 RUN  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta
 
 # tools
 RUN  apt-get update && apt-get install -y  \
-     ssh \
      locales-all \
      dos2unix \
      rsync \
@@ -87,7 +70,6 @@ RUN  apt-get update && apt-get install -y  \
      libopencv-dev \
      python3-opencv \
      libfcgi-dev \
-     iproute2 \
      && apt-get clean
 
 
@@ -134,3 +116,5 @@ RUN apt-get update && apt-get install -y  \
     && apt-get clean
 
 ################## libs end
+
+CMD ["/sbin/init"]
