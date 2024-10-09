@@ -3,7 +3,7 @@
 #       export DOCKER_BUILDKIT=1
 #       export COMPOSE_DOCKER_CLI_BUILD=1
 #   docker build -t arch_clion_local:0.1 -f arch_clion_local.Dockerfile .
-#   docker run -it --name cb clion_local:0.1 /bin/bash
+#   docker run -it --name cb arch_clion_local:0.1 /bin/bash
 #   docker start -ia cb
 FROM archlinux:latest
 
@@ -32,6 +32,7 @@ RUN pacman -Syyu --noconfirm \
     gtest \
     opencv \
     fcgi \
+    libssh2 \
     \
     dos2unix \
     rsync \
@@ -84,5 +85,10 @@ RUN cd /tmp \
     && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
     && make install \
     && cd /tmp && rm -rf kcp
+
+# 配置bash
+RUN echo '. "$HOME/.cargo/env"' >> /root/.bashrc \
+    && echo "alias ll='ls -lh'" >> /root/.bashrc
+
 
 CMD ["/bin/bash"]
