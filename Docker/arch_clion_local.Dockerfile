@@ -88,7 +88,7 @@ RUN cd /tmp \
 
 # 配置bash
 RUN echo '. "$HOME/.cargo/env"' >> /root/.bashrc \
-    && echo "alias ll='ls -lh'" >> /root/.bashrc
+    && echo "alias ll='ls -lh --color=auto'" >> /root/.bashrc
 
 
 CMD ["/bin/bash"]

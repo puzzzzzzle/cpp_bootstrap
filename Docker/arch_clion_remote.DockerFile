@@ -22,7 +22,8 @@ RUN pacman -S --noconfirm openssh
 RUN set -e && \
     useradd -m user && \
     echo "user:password" | chpasswd && \
-    usermod -s /bin/bash user
+    usermod -s /bin/bash user && \
+    cat /root/.bashrc >> /home/user/.bashrc
 
 
 # 创建必要的目录并生成 SSH 主机密钥
