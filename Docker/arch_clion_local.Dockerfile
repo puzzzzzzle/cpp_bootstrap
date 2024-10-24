@@ -60,6 +60,9 @@ RUN pacman -Syyu --noconfirm \
     protobuf \
     capnproto \
     flatbuffers \
+    poco \
+    libuv \
+    asio \
     && pacman -Scc --noconfirm
 
 # 安装 Rust
@@ -85,6 +88,18 @@ RUN cd /tmp \
     && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
     && make install \
     && cd /tmp && rm -rf kcp
+
+# 安装 libcpr 类似python requests的c++库
+RUN cd /tmp \
+    && git clone https://github.com/libcpr/cpr.git \
+    && cd cpr \
+    && git checkout 1.11.0 \
+    && mkdir build \
+    && cd build \
+    && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr \
+    && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
+    && sudo make install \
+    && cd /tmp && rm -rf cpr
 
 # 配置bash
 RUN echo '. "$HOME/.cargo/env"' >> /root/.bashrc \
