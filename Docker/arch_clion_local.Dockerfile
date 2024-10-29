@@ -60,6 +60,7 @@ RUN pacman -Syyu --noconfirm \
     protobuf \
     capnproto \
     flatbuffers \
+    \
     poco \
     libuv \
     asio \
@@ -96,7 +97,7 @@ RUN cd /tmp \
     && git checkout 1.11.0 \
     && mkdir build \
     && cd build \
-    && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr \
+    && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCPR_USE_SYSTEM_CURL=ON \
     && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'` \
     && sudo make install \
     && cd /tmp && rm -rf cpr
