@@ -11,12 +11,13 @@
 
 #pragma once
 
+#include <atomic>
 #include <cerrno>
 #include <chrono>
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
-#include <atomic>
+#include <format>
 
 #include "stl_to_steam.h"
 #ifdef STD_LOG_SYNC
@@ -116,3 +117,10 @@ inline void set_log_level(LogLevel level) { log_level() = level; }
 #define LOG_PERROR(msg) \
   ERR_LOG(ERROR, msg << "[ reason maybe  :  " << strerror(errno) << " ]")
 #define LOG_FATAL(msg) ERR_LOG(FATAL, msg)
+
+#define STD_FORMAT(msg...) std::format(msg)
+#define FLOG_TRACE(msg...) STD_LOG(TRACE, STD_FORMAT(msg))
+#define FLOG_DEBUG(msg...) STD_LOG(DEBUG, STD_FORMAT(msg))
+#define FLOG_INFO(msg...) STD_LOG(INFO, STD_FORMAT(msg))
+#define FLOG_WARNING(msg...) ERR_LOG(WARNING, STD_FORMAT(msg))
+#define FLOG_ERROR(msg...) ERR_LOG(ERROR, STD_FORMAT(msg))
