@@ -124,3 +124,6 @@ inline void set_log_level(LogLevel level) { log_level() = level; }
 #define FLOG_INFO(msg...) STD_LOG(INFO, STD_FORMAT(msg))
 #define FLOG_WARNING(msg...) ERR_LOG(WARNING, STD_FORMAT(msg))
 #define FLOG_ERROR(msg...) ERR_LOG(ERROR, STD_FORMAT(msg))
+
+#define STD_LINE(msg...) std::cout << msg << std::endl;
+
