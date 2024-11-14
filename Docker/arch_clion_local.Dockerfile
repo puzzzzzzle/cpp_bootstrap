@@ -33,6 +33,7 @@ RUN pacman -Syyu --noconfirm \
     opencv \
     fcgi \
     libssh2 \
+    openssl \
     \
     dos2unix \
     rsync \
@@ -44,6 +45,7 @@ RUN pacman -Syyu --noconfirm \
     vim \
     lrzsz \
     less \
+    vi \
     \
     python \
     python-pip \

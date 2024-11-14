@@ -6,7 +6,7 @@
 #       export COMPOSE_DOCKER_CLI_BUILD=1
 
 #   docker build -t arch_clion_remote:0.1 -f arch_clion_remote.DockerFile .
-#    docker run -d --cap-add sys_ptrace -v /data:/data -p 30022:22 --name cb arch_clion_remote:0.1
+#   docker run -d --privileged -v /data:/data -p 30022:22 --name cb arch_clion_remote:0.1
 #
 # stop:
 #   docker stop clion_remote_env
@@ -23,7 +23,8 @@ RUN set -e && \
     useradd -m user && \
     echo "user:password" | chpasswd && \
     usermod -s /bin/bash user && \
-    cat /root/.bashrc >> /home/user/.bashrc
+    ls -al /root && \
+    echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 
 # 创建必要的目录并生成 SSH 主机密钥
