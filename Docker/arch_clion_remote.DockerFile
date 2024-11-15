@@ -21,10 +21,10 @@ RUN pacman -S --noconfirm openssh
 # 创建用户并设置密码
 RUN set -e && \
     useradd -m user && \
-    echo "user:password" | chpasswd && \
+    echo "user:quyysfa93@FFqw1f2q3" | chpasswd && \
     usermod -s /bin/bash user && \
     ls -al /root && \
-    echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    echo "user ALL=(ALL) NOPASSWD: ALL" >> /eutc/sudoers
 
 
 # 创建必要的目录并生成 SSH 主机密钥
