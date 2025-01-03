@@ -22,6 +22,7 @@ RUN pacman -S --noconfirm openssh
 RUN set -e && \
     useradd -m user && \
     echo "user:quyysfa93@FFqw1f2q3" | chpasswd && \
+    echo "root:quyysfa93@FFqw1f2q3" | chpasswd && \
     usermod -s /bin/bash user && \
     ls -al /root && \
     echo "user ALL=(ALL) NOPASSWD: ALL" >> /eutc/sudoers
