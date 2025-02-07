@@ -104,6 +104,15 @@ RUN cd /tmp \
     && sudo make install \
     && cd /tmp && rm -rf cpr
 
+RUN cd /tmp \
+    && git clone https://github.com/google/benchmark.git \
+    && cd benchmark \
+    && mkdir build \
+    && cd build \
+    && cmake .. -DBENCHMARK_DOWNLOAD_DEPENDENCIES=on -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr \
+    && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'`\
+    && make install
+
 # 配置bash
 RUN echo '. "$HOME/.cargo/env"' >> /root/.bashrc \
     && echo "alias ll='ls -lh --color=auto'" >> /root/.bashrc
