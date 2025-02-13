@@ -32,6 +32,7 @@ RUN pacman -Syyu --noconfirm \
     gtest \
     opencv \
     fcgi \
+    spawn-fcgi \
     libssh2 \
     openssl \
     \
