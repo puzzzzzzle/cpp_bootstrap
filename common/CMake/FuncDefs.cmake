@@ -184,7 +184,7 @@ function(FindBoostLib COMPONENTS_LIST RESULT)
     endif ()
     # find libs
     set(BOOST_FIND_LIBS "")
-    find_package(Boost COMPONENTS ${${COMPONENTS_LIST}} REQUIRED)
+    find_package(Boost CONFIG REQUIRED COMPONENTS ${${COMPONENTS_LIST}})
     if (Boost_FOUND)
         include_directories(${Boost_INCLUDE_DIRS})
         list(APPEND BOOST_FIND_LIBS ${Boost_LIBRARIES})
