@@ -30,6 +30,7 @@ RUN pacman -Syyu --noconfirm \
     \
     boost \
     gtest \
+    benchmark \
     opencv \
     fcgi \
     spawn-fcgi \
