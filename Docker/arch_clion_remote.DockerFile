@@ -25,7 +25,7 @@ RUN set -e && \
     echo "root:quyysfa93@FFqw1f2q3" | chpasswd && \
     usermod -s /bin/bash user && \
     ls -al /root && \
-    echo "user ALL=(ALL) NOPASSWD: ALL" >> /eutc/sudoers
+    echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 
 # 创建必要的目录并生成 SSH 主机密钥
