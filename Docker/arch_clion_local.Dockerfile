@@ -68,6 +68,7 @@ RUN pacman -Syyu --noconfirm \
     poco \
     libuv \
     asio \
+    zsh \
     && pacman -Scc --noconfirm
 
 # 安装 Rust
@@ -114,7 +115,24 @@ RUN cd /tmp \
     && cd build \
     && cmake .. -DBENCHMARK_DOWNLOAD_DEPENDENCIES=on -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr \
     && make -j `cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'`\
-    && make install
+    && make install \
+    && cd /tmp && rm -rf benchmark
+
+
+# 安装 entt (header only)
+RUN cd /tmp \
+    && git clone https://github.com/skypjack/entt.git \
+    && cd entt \
+    && cp -vr src/entt /usr/include/ \
+    && cd /tmp && rm -rf entt
+
+# 安装 Microsoft proxy (header only)
+RUN cd /tmp \
+    && git clone https://github.com/microsoft/proxy.git \
+    && cd proxy \
+    && cp -vr include/proxy /usr/include/ \
+    && cd /tmp && rm -rf proxy
+
 
 # 配置bash
 RUN echo '. "$HOME/.cargo/env"' >> /root/.bashrc \
