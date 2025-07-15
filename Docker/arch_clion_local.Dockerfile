@@ -9,7 +9,7 @@ FROM archlinux:latest
 
 # 使用镜像
 RUN mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist_old \
-    && echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist \
+    && echo 'Server = http://mirrors.aliyun.com/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist \
     && cat /etc/pacman.d/mirrorlist_old >> /etc/pacman.d/mirrorlist
 
 # 更新包数据库并安装基本工具
@@ -106,6 +106,7 @@ RUN cd /tmp \
     && sudo make install \
     && cd /tmp && rm -rf cpr
 
+# 安装 google benchmark
 RUN cd /tmp \
     && git clone https://github.com/google/benchmark.git \
     && cd benchmark \
