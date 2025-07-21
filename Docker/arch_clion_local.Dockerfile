@@ -36,6 +36,7 @@ RUN pacman -Syyu --noconfirm \
     spawn-fcgi \
     libssh2 \
     openssl \
+    simde \
     \
     dos2unix \
     rsync \
@@ -69,6 +70,9 @@ RUN pacman -Syyu --noconfirm \
     libuv \
     asio \
     zsh \
+    \
+    xorg-xauth \
+    \
     && pacman -Scc --noconfirm
 
 # 安装 Rust
