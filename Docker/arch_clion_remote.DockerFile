@@ -6,7 +6,7 @@
 #       export COMPOSE_DOCKER_CLI_BUILD=1
 
 #   docker build -t arch_clion_remote:0.1 -f arch_clion_remote.DockerFile .
-#   docker run -d --privileged -v /data:/data -p 30022:22 --name cb arch_clion_remote:0.1
+#   docker run -d --privileged -v /data:/data -v ~/.ssh:/root/.ssh:ro -v /var/run/docker.sock:/var/run/docker.sock  -p 30022:22 --name cb arch_clion_remote:0.1
 #
 # stop:
 #   docker stop clion_remote_env
